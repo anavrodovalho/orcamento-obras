@@ -295,6 +295,9 @@ const editor = {
       </div>
       <div class="cartao">
         <div class="cartao-titulo"><h2>Proposta e revisão</h2></div>
+        <label class="rotulo">Escopo do projeto (opcional — entra no início do escopo da proposta, antes da lista automática)
+          <textarea id="t-escopo" class="campo" rows="3" placeholder="Ex.: Residência unifamiliar conforme projeto arquitetônico aprovado, incluindo fundação, estrutura, alvenaria, instalações e acabamentos.">${esc(this.orc.escopo || '')}</textarea>
+        </label>
         <label class="rotulo">Adicionais / observações da proposta
           <textarea id="t-obs" class="campo" rows="3">${esc(this.orc.observacoes || '')}</textarea>
         </label>
@@ -329,6 +332,7 @@ const editor = {
       this.aposAlterar(false);
     });
     el('t-obs').addEventListener('input', (e) => { this.orc.observacoes = e.target.value; this.marcarAlterado(); });
+    el('t-escopo').addEventListener('input', (e) => { this.orc.escopo = e.target.value; this.marcarAlterado(); });
     alvo.querySelectorAll('[data-conf]').forEach((cb) => cb.addEventListener('change', () => {
       c[cb.dataset.conf] = cb.checked;
       this.aposAlterar(false);

@@ -126,8 +126,9 @@ body.modo-impressao { overflow: hidden; }
 .pr-secao { margin: 0 0 6mm; break-inside: avoid-page; }
 .pr-secao h2 { font-size: 11.5pt; color: #052F34; border-bottom: 1.5px solid #B8975A; padding-bottom: 1.2mm; margin: 0 0 3mm; }
 .pr-secao p { margin: 0 0 2mm; text-align: justify; }
-.pr-vantagens { margin: 2mm 0 0; padding-left: 5mm; }
-.pr-vantagens li { margin-bottom: 1mm; }
+.pr-escopo { display: grid; grid-template-columns: 42mm 1fr; gap: 1.6mm 4mm; margin: 2mm 0 0; }
+.pr-escopo dt { color: #64748B; }
+.pr-escopo dd { margin: 0; }
 .pr-tabela { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
 .pr-tabela th { text-align: left; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .4px; color: #64748B; border-bottom: 1px solid #CBD5E1; padding: 1.5mm 2mm; }
 .pr-tabela td { padding: 1.8mm 2mm; border-bottom: 1px solid #EEF1F6; vertical-align: top; }
@@ -158,7 +159,8 @@ body.modo-impressao { overflow: hidden; }
   .impressao-dica { display: none; }
   .folha { padding: 0 5mm 8mm; font-size: 9.5pt; min-height: 0; }
   .pr-topo { margin: 0 -5mm 6mm; padding: 5mm; flex-wrap: wrap; }
-  .pr-dados { grid-template-columns: 1fr; gap: 0 4mm; }
+  .pr-dados, .pr-escopo { grid-template-columns: 1fr; gap: 0 4mm; }
+  .pr-escopo dd { margin-bottom: 1.5mm; }
   .pr-dados dd { margin-bottom: 1.5mm; }
   .pr-tabela td:first-child { width: auto; }
   .pr-tabela .num { width: auto; }

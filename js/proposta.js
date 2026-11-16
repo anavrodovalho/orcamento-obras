@@ -15,8 +15,8 @@ function abrirProposta(modalidade) {
   const previa = !prop.completa || !r.pode_emitir;
 
   const linhaFase = (f) => `<tr><td><strong>${esc(f.fase)}</strong></td><td>${esc(f.descricao)}</td><td class="num">${moeda(f.valor)}</td></tr>`;
-  const vantagens = [e.vantagem_1, e.vantagem_2, e.vantagem_3].filter((v) => String(v || '').trim());
-  const historia = String(e.historia || '').split(/\n{2,}/).map((t) => t.trim()).filter(Boolean);
+  const textoEscopo = String(orc.escopo || '').split(/\n+/).map((t) => t.trim()).filter(Boolean);
+  const escopo = montarEscopo(p);
 
   el('impressao-folha').innerHTML = `
     ${previa ? '<div class="marca-previa" aria-hidden="true">PRÉVIA</div>' : ''}
@@ -40,12 +40,11 @@ function abrirProposta(modalidade) {
       <dt>Padrão</dt><dd>${esc([p.pavimentos, 'acabamento ' + (p.acabamento || '—').toLowerCase()].join(' · '))}</dd>
     </dl>
 
-    ${historia.length || vantagens.length ? `
     <section class="pr-secao">
-      <h2>Sobre a empresa</h2>
-      ${historia.map((t) => `<p>${esc(t)}</p>`).join('')}
-      ${vantagens.length ? `<ul class="pr-vantagens">${vantagens.map((v) => `<li>${esc(v)}</li>`).join('')}</ul>` : ''}
-    </section>` : ''}
+      <h2>Escopo do projeto</h2>
+      ${textoEscopo.map((t) => `<p>${esc(t)}</p>`).join('')}
+      <dl class="pr-escopo">${escopo.map(([rot, txt]) => `<dt>${esc(rot)}</dt><dd>${esc(txt)}</dd>`).join('')}</dl>
+    </section>
 
     <section class="pr-secao">
       <h2>${com ? 'Mão de obra e administração' : 'Etapas da obra'}</h2>
@@ -89,6 +88,59 @@ function abrirProposta(modalidade) {
   el('impressao').hidden = false;
   document.body.classList.add('modo-impressao');
   window.scrollTo(0, 0);
+}
+
+/** Escopo da obra montado a partir dos parâmetros do orçamento: [rótulo, texto][]. */
+function montarEscopo(p) {
+  const n = (v) => Number(v) || 0;
+  const m2 = (v) => num2(v) + ' m²';
+  const minus = (s) => String(s || '').toLowerCase();
+  const plural = (q, um, varios) => `${q} ${q === 1 ? um : varios}`;
+  const PAV = {
+    'TÉRREO': 'residência térrea',
+    'SUBSOLO+TÉRREO': 'residência com subsolo e térreo',
+    'SUBSOLO+TÉRREO+1PAV': 'residência com subsolo, térreo e pavimento superior',
+    'TÉRREO+1PAV': 'sobrado (térreo + 1 pavimento)',
+    'TÉRREO+2PAV': 'residência com térreo + 2 pavimentos',
+  };
+  const linhas = [];
+
+  linhas.push(['Obra', `Construção de ${PAV[p.pavimentos] || 'residência'}${n(p.area) ? ' com ' + m2(p.area) + ' de área construída' : ''}.`]);
+
+  const carac = [];
+  if (p.terreno) carac.push(p.terreno === 'PLANO' ? 'terreno plano' : 'terreno em ' + minus(p.terreno));
+  if (p.telhado) carac.push('telhado ' + minus(p.telhado));
+  if (p.acabamento) carac.push('acabamento padrão ' + minus(p.acabamento));
+  if (p.pintura) carac.push(p.pintura === 'NORMAL' ? 'pintura lisa' : 'pintura com grafiato/textura');
+  if (p.pe_direito_duplo && p.pe_direito_duplo !== 'NENHUM') carac.push('pé-direito duplo na ' + minus(p.pe_direito_duplo));
+  if (carac.length) linhas.push(['Características', carac.join(', ').replace(/^./, (c) => c.toUpperCase()) + '.']);
+
+  const comodos = [
+    [n(p.quartos), 'quarto', 'quartos'], [n(p.banheiros), 'banheiro', 'banheiros'], [n(p.lavabos), 'lavabo', 'lavabos'],
+    [n(p.cozinhas), 'cozinha', 'cozinhas'], [n(p.duchas), 'ducha', 'duchas'], [n(p.escadas), 'escada', 'escadas'],
+  ].filter(([q]) => q > 0).map(([q, um, v]) => plural(q, um, v));
+  if (comodos.length) linhas.push(['Ambientes', comodos.join(', ') + '.']);
+
+  const areas = [];
+  if (n(p.gourmet)) areas.push('área gourmet ' + m2(p.gourmet));
+  if (n(p.piscina)) areas.push('piscina ' + m2(p.piscina));
+  if (n(p.sauna)) areas.push('sauna ' + m2(p.sauna));
+  if (n(p.garagem)) areas.push('garagem ' + m2(p.garagem));
+  if (n(p.piso_ext)) areas.push('área externa com piso ' + m2(p.piso_ext));
+  if (n(p.grama)) areas.push('área externa com grama ' + m2(p.grama));
+  if (n(p.muro)) areas.push('muros ' + num2(p.muro) + ' m lineares');
+  if (n(p.gesso)) areas.push('gesso (sancas e rebaixos) ' + m2(p.gesso));
+  if (areas.length) linhas.push(['Áreas complementares', areas.join('; ').replace(/^./, (c) => c.toUpperCase()) + '.']);
+
+  if (p.portao === 'SIM') {
+    const med = n(p.portao_largura) && n(p.portao_altura) ? ` de ${num2(p.portao_largura)} × ${num2(p.portao_altura)} m` : '';
+    linhas.push(['Portão', `Incluso portão${med}.`]);
+  } else if (p.portao === 'NÃO') {
+    linhas.push(['Portão', 'Não incluso.']);
+  }
+  if (p.terraplanagem === 'CONSTRUTOR') linhas.push(['Terraplanagem', 'Inclusa no orçamento.']);
+  if (p.terraplanagem === 'CONTRATANTE') linhas.push(['Terraplanagem', 'Por conta do contratante (fora deste orçamento).']);
+  return linhas;
 }
 
 function fecharImpressao() {
