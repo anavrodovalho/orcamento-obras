@@ -44,6 +44,15 @@ Para atualizar o Apps Script depois, use *Implantar → Gerenciar implantações
   - Para resolver só em um orçamento, digite o preço na tela de itens.
 - **Proposta**: na aba Resumo, escolha "Ver proposta" (com ou sem material) e depois *Imprimir / Salvar PDF*.
   - Enquanto houver pendências, a folha sai com a marca **PRÉVIA**.
+- **Cronograma**: 25 etapas em sequência a partir do início da obra. Os dias de cada etapa vêm da aba `cfg_cronograma`.
+  - Dá para trocar os dias de uma etapa só naquele orçamento.
+  - Durante a obra, registre a data de conclusão ou o % de cada etapa. O sistema mostra o % geral (ponderado pelos dias), as etapas atrasadas e um gráfico com a linha de hoje.
+- **Pagamento**: escolha a modalidade contratada (com ou sem material) e a data-base.
+  - Entrada = adiantamento × total. O saldo é dividido em parcelas iguais até o término previsto, e o ajuste de centavos vai para a última.
+  - Preencha "Pago em" ao receber cada parcela.
+- **Contrato**: minuta com as cláusulas da aba `cfg_contrato`, já preenchidas com os dados do orçamento.
+  - Traz o Anexo I (parcelas) e o Anexo II (cronograma físico).
+  - Enquanto faltar algum dado, sai com a marca **MINUTA** e a lista de pendências no topo.
 
 ## Editar o modelo (fatores, fórmulas, preços)
 
@@ -52,6 +61,12 @@ Tudo fica nas abas `cfg_*` da planilha. Depois de editar, clique em ↻ no siste
 - `cfg_itens`: grupo, categoria, código SINAPI, fator, `formula_qtd`, `preco_manual` e ativo.
 - `cfg_empresa`: dados da proposta, taxas padrão e `formula_area_equivalente`.
 - `cfg_bdi`, `cfg_rateio` (fases COM/SEM e %), `cfg_categorias` e `cfg_termos`.
+- `cfg_cronograma`: etapa e `formula_dias`, com o padrão `ARREDONDAR_CIMA(k/125*AREA)`. A laje multiplica por 1,7 quando há pé-direito duplo.
+- `cfg_contrato`: uma linha por cláusula.
+  - **Colunas**: `ordem`, `secao`, `tipo` (`clausula` é numerada; `paragrafo` não) e `condicao`.
+  - **Condição**: segue o formato das fórmulas e pode usar `MODALIDADE`, que vale "COM" ou "SEM". Por exemplo, `MODALIDADE="SEM"` ou `TERRAPLANAGEM="CONTRATANTE"`. Vazia, a cláusula entra sempre.
+  - **Texto**: aceita campos entre chaves, como `{CONTRATANTE}`, `{VALOR_TOTAL}` e `{DATA_FIM}`. A tela *Modelo* lista todos os campos e aponta erros.
+  - **Numeração**: é automática. Incluir ou tirar cláusulas não deixa buraco.
 
 As fórmulas usam o jeito do Excel em português, com `;` separando argumentos:
 
@@ -88,15 +103,30 @@ python -I tools/atualizar_sinapi.py "C:/caminho/arquivo-novo.xlsx" --competencia
 ## Desenvolvimento
 
 ```
-node tests/testes-motor.js      # 24 testes, incluindo a comparação item a item com a planilha
-node tests/testes-backend.js    # 15 testes do Apps Script num simulador
+node tests/testes-motor.js      # 39 testes: orçamento item a item e cronograma comparados com a planilha, parcelas e contrato
+node tests/testes-backend.js    # 18 testes do Apps Script num simulador
 node tests/servidor-dev.js 8788 # site + backend simulado em http://localhost:8788 (ana / teste123)
 python -I tools/extrair_planilha.py "planilha.xlsx"   # regera o modelo e a base a partir da planilha original
 ```
 
-O motor de cálculo (`js/motor.js` + `js/formula.js`) roda igual no navegador e no Node. Com o exemplo da planilha, ele reproduz o subtotal de R$ 456.454,02.
+O cálculo roda igual no navegador e no Node:
+
+- `js/formula.js`: fórmulas.
+- `js/motor.js`: orçamento.
+- `js/cronograma.js`: cronograma e parcelas.
+- `js/contrato.js`: escopo e contrato.
+
+Com o exemplo da planilha, ele reproduz o subtotal de R$ 456.454,02 e o cronograma de 295 dias, de 01/10/2024 a 23/07/2025.
+
+## Atualizar uma instalação existente (Fase 1 → Fase 2)
+
+1. No Apps Script, substitua o conteúdo de **Code, Db, Config, Setup e Seed** pelos arquivos de mesmo nome da pasta `apps-script/`. Auth e Orcamentos não mudaram.
+2. Rode **`setupPlanilha`** de novo. Ele:
+   - cria `cfg_cronograma` e `cfg_contrato`;
+   - acrescenta a chave nova `atividades_construtor_padrao` em `cfg_empresa`;
+   - não mexe em nada que já foi editado.
+3. Publique: *Implantar → Gerenciar implantações → editar → Nova versão*.
 
 ## Próximas fases
 
-- **Fase 2**: cronograma físico-financeiro, parcelas e contrato.
 - **Fase 3**: gastos realizados × orçado, integração com Gestão de Obras e PDFs salvos no Drive.

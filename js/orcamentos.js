@@ -140,7 +140,7 @@ const editor = {
   novoOrcamento(modelo) {
     const e = modelo.empresa || {};
     const n = (v) => (v === '' || v === null || v === undefined ? null : Motor.num(v));
-    return {
+    return completarFase2({
       status: 'Rascunho',
       parametros: {
         data_orcamento: hojeIso(), terreno: 'PLANO', telhado: 'EMBUTIDO', pavimentos: 'TÉRREO',
@@ -154,7 +154,7 @@ const editor = {
       adicionais: [],
       confirmacoes: { coeficientes_revisados: false, precos_revisados: false },
       observacoes: e.observacoes_proposta || '',
-    };
+    });
   },
 
   async abrir(parametro) {
@@ -173,6 +173,7 @@ const editor = {
       this.orc = Object.assign(base, o.dados || {});
       this.orc.parametros = Object.assign({}, base.parametros, (o.dados || {}).parametros || {});
       this.orc.status = o.status;
+      completarFase2(this.orc);
     }
     this.aba = 'dados';
     this.calcular();
@@ -183,6 +184,7 @@ const editor = {
     this.resultado = Motor.calcular({
       modelo: dados.modelo, sinapi: dados.sinapi, indiceSinapi: dados.indiceSinapi, orcamento: this.orc, hoje: hojeIso(),
     });
+    this.fase2 = calcularFase2(this.orc, this.resultado);
     return this.resultado;
   },
 
@@ -210,7 +212,7 @@ const editor = {
       </div>
       <div class="ed-resumo" id="ed-resumo"></div>
       <nav class="abas" role="tablist">
-        ${[['dados', 'Dados da obra'], ['itens', 'Itens'], ['resumo', 'Resumo e propostas'], ['validacao', 'Validação']]
+        ${[['dados', 'Dados da obra'], ['itens', 'Itens'], ['resumo', 'Resumo e propostas'], ['cronograma', 'Cronograma'], ['pagamento', 'Pagamento'], ['contrato', 'Contrato'], ['validacao', 'Validação']]
           .map(([k, r]) => `<button type="button" role="tab" class="aba${this.aba === k ? ' ativa' : ''}" data-aba="${k}">${r}<span class="aba-contador" id="aba-cont-${k}"></span></button>`).join('')}
       </nav>
       <div id="ed-conteudo"></div>`;
@@ -240,6 +242,10 @@ const editor = {
       <div class="${r.pode_emitir ? 'ok' : 'pend'}"><span>Emissão</span><strong>${r.pode_emitir ? 'Pronto para emitir' : r.pendencias_emissao + ' pendência(s)'}</strong></div>`;
     el('aba-cont-itens').textContent = r.pendentes ? String(r.pendentes) : '';
     el('aba-cont-validacao').textContent = r.pendencias_emissao ? String(r.pendencias_emissao) : '';
+    const f2 = this.fase2;
+    el('aba-cont-cronograma').textContent = f2.crono.atrasadas ? String(f2.crono.atrasadas) : '';
+    el('aba-cont-pagamento').textContent = f2.parcelas.vencidas ? String(f2.parcelas.vencidas) : '';
+    el('aba-cont-contrato').textContent = f2.contrato.pendencias.length ? String(f2.contrato.pendencias.length) : '';
     const nome = el('ed-nome');
     if (nome) nome.textContent = this.orc.parametros.cliente_nome || 'Novo orçamento';
   },
@@ -249,6 +255,9 @@ const editor = {
     if (this.aba === 'dados') this.abaDados(alvo);
     else if (this.aba === 'itens') this.abaItens(alvo);
     else if (this.aba === 'resumo') this.abaResumo(alvo);
+    else if (this.aba === 'cronograma') this.abaCronograma(alvo);
+    else if (this.aba === 'pagamento') this.abaPagamento(alvo);
+    else if (this.aba === 'contrato') this.abaContrato(alvo);
     else this.abaValidacao(alvo);
   },
 
@@ -615,6 +624,10 @@ const editor = {
     copia.parametros.cliente_nome = (copia.parametros.cliente_nome || '') + ' (cópia)';
     copia.parametros.data_orcamento = hojeIso();
     copia.confirmacoes = { coeficientes_revisados: false, precos_revisados: false };
+    // A cópia é um orçamento novo: não leva o andamento da obra nem os pagamentos recebidos.
+    if (copia.cronograma) copia.cronograma.execucao = {};
+    copia.pagamentos = {};
+    if (copia.contrato) copia.contrato.data_base = '';
     this.alterado = false;
     history.replaceState(null, '', '#/orcamentos/novo');
     app.rotaAtual = 'orcamento';

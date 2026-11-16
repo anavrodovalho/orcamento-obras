@@ -123,6 +123,131 @@ SECOES = [
 ]
 
 
+# ── Minuta do contrato (aba Contrato), com campos {…} e cláusulas condicionais ──
+# tipo "clausula" recebe número automático; "paragrafo" não. condicao vazia = sempre entra.
+ATIVIDADES_PADRAO = ("execução da mão de obra de fundação, estrutura, alvenaria, instalações hidráulicas e elétricas, "
+                     "revestimentos, cobertura, pintura e acabamentos, conforme projeto aprovado, além da gestão da equipe "
+                     "e da limpeza periódica da obra.")
+
+
+def _c(secao, texto, condicao="", tipo="clausula"):
+    return {"secao": secao, "tipo": tipo, "condicao": condicao, "texto": texto}
+
+
+_CLAUSULAS = [
+    _c("IDENTIFICAÇÃO DAS PARTES CONTRATANTES",
+       "Neste presente contrato, define-se por CONTRATANTE o(a) Sr(a). {CONTRATANTE}, inscrito(a) no CPF sob o nº {CPF}, "
+       "e por CONTRATADO, doravante denominado CONSTRUTOR, a empresa {EMPRESA}, inscrita no CNPJ sob o nº {CNPJ}, "
+       "localizada em {ENDERECO_EMPRESA}.", tipo="paragrafo"),
+    _c("IDENTIFICAÇÃO DAS PARTES CONTRATANTES",
+       "As partes acima identificadas têm, entre si, justo e acertado o presente Contrato de Construção por Empreitada, "
+       "que se regerá pelas cláusulas seguintes e pelas condições descritas no presente.", tipo="paragrafo"),
+    _c("DO OBJETO DO CONTRATO",
+       "O presente tem como OBJETO a construção de um imóvel residencial de {AREA} m², a ser construído em "
+       "{ENDERECO_OBRA} - {CIDADE}, na modalidade de {MODALIDADE_TEXTO}."),
+    _c("DO OBJETO DO CONTRATO",
+       "A construção será executada conforme consta na planta elaborada pelo(a) Engenheiro(a)/Arquiteto(a) responsável, "
+       "após aprovada junto à Prefeitura Municipal do local do respectivo imóvel."),
+    _c("DA EXECUÇÃO",
+       "A execução das obras será administrada pelo CONSTRUTOR, facultando-lhe a contratação de pedreiros e ajudantes, "
+       "os quais terão vínculo único e direto com o mesmo, que ficará exclusivamente responsável pelo pagamento e por "
+       "todos os encargos existentes."),
+    _c("DA EXECUÇÃO",
+       "O CONSTRUTOR fornecerá, além do pessoal, todos os recursos necessários à concretização da obra, como "
+       "ferramentas, EPIs (Equipamentos de Proteção Individual), refeições e água potável."),
+    _c("DA EXECUÇÃO",
+       "Quaisquer danos causados a terceiros e provenientes da execução dos trabalhos, agindo dolosa ou culposamente, "
+       "serão de inteira responsabilidade do CONSTRUTOR, mesmo que praticados pelos seus ajudantes."),
+    _c("DA EXECUÇÃO",
+       "O CONSTRUTOR terá completa e irrestrita liberdade para executar seus trabalhos, não necessitando predeterminar "
+       "horários ou funções, ficando assim caracterizado que o mesmo faz a gestão das atividades de execução da obra, "
+       "não mantendo nenhum vínculo trabalhista com o CONTRATANTE."),
+    _c("DA EXECUÇÃO",
+       "Limpeza e terraplanagem serão contratadas e pagas pelo CONTRATANTE, fora do preço deste contrato.",
+       'TERRAPLANAGEM="CONTRATANTE"'),
+    _c("DA EXECUÇÃO",
+       "A terraplanagem orçada será providenciada pelo CONSTRUTOR, conforme o escopo contratado.",
+       'TERRAPLANAGEM="CONSTRUTOR"'),
+    _c("DA EXECUÇÃO",
+       "[PENDENTE: definir o responsável pela terraplanagem]",
+       'E(TERRAPLANAGEM<>"CONSTRUTOR"; TERRAPLANAGEM<>"CONTRATANTE")'),
+    _c("DA EXECUÇÃO", "Escopo contratado: {ESCOPO}"),
+    _c("DA EXECUÇÃO",
+       "Fica sob responsabilidade do CONSTRUTOR a mão de obra referente à construção da calçada e dos muros."),
+    _c("DOS MATERIAIS",
+       "O CONTRATANTE será responsável por toda compra e entrega de material de fundação, alvenaria, hidráulica, "
+       "elétrica, acabamento e serralheria (incluindo o portão frontal), bem como pelos recursos para armazenamento "
+       "seguro destes itens (contêiner ou barracão provisório com tranca e fechadura em pleno funcionamento).",
+       'MODALIDADE="SEM"'),
+    _c("DOS MATERIAIS",
+       "O CONSTRUTOR será responsável por toda compra e entrega de material de fundação, alvenaria, hidráulica, "
+       "elétrica, acabamento e serralheria (incluindo o portão frontal), bem como pelos recursos para armazenamento "
+       "seguro destes itens (contêiner ou barracão provisório com tranca e fechadura em pleno funcionamento). "
+       "O CONSTRUTOR também fica obrigado a apresentar ao CONTRATANTE no mínimo 3 (três) cotações, a não ser que "
+       "seja dispensado pelo CONTRATANTE formalmente.",
+       'MODALIDADE="COM"'),
+    _c("DOS MATERIAIS",
+       "O CONSTRUTOR será responsável por trancar diariamente, em local seguro, todos os materiais da obra, bem como "
+       "os respectivos equipamentos e ferramentas utilizados na execução do serviço, sendo responsabilizado a repor "
+       "os possíveis prejuízos causados em caso de desleixo e esquecimento destes itens fora dos locais mencionados."),
+    _c("DOS MATERIAIS",
+       "O CONSTRUTOR se compromete a contratar profissionais com experiência comprovada e que sejam plenamente "
+       "capazes de executar a obra em sua totalidade de forma segura, eficaz e sem desperdícios."),
+    _c("DOS MATERIAIS",
+       "Caso seja comprovado desperdício, inutilização ou extravio de material, ficará o CONSTRUTOR obrigado a "
+       "restituí-los ao CONTRATANTE."),
+    _c("DAS VISTORIAS",
+       "Resta facultado ao CONTRATANTE, bem como ao engenheiro/arquiteto responsável pela planta, realizar vistorias "
+       "a qualquer dia ou horário, concernentes à execução das obras, cabendo ao CONSTRUTOR se comprometer a aceitar "
+       "ou não os pareceres de ambos."),
+    _c("DO PREÇO E DA FORMA DE PAGAMENTO",
+       "Fica ajustado que o CONTRATANTE pagará ao CONSTRUTOR o valor total de R$ {VALOR_TOTAL}, sendo R$ {ENTRADA} "
+       "de entrada (adiantamento), a ser descontada do valor total, para custeio de ferramentas e insumos pagos pelo "
+       "CONSTRUTOR, e o saldo de R$ {SALDO} em {N_PARCELAS} parcela(s) de R$ {VALOR_PARCELA} (a última de "
+       "R$ {ULTIMA_PARCELA}, por ajuste de centavos), a cada {INTERVALO} dias contados de {DATA_BASE}, com a última "
+       "no término previsto da obra ({DATA_FIM}), conforme o cronograma de pagamentos do Anexo I."),
+    _c("DO PREÇO E DA FORMA DE PAGAMENTO",
+       "O valor a ser pago aos pedreiros e ajudantes será feito individualmente pelo CONSTRUTOR e às suas expensas, "
+       "visto que os mesmos possuem vínculo única e exclusivamente com este, comprometendo-se a pagá-los semanalmente."),
+    _c("DA RESCISÃO",
+       "A rescisão por iniciativa do CONTRATANTE observará a legislação aplicável e as condições expressamente "
+       "acordadas pelas partes, com apuração dos serviços executados e valores devidos."),
+    _c("DA RESCISÃO",
+       "A rescisão por iniciativa do CONSTRUTOR observará a legislação aplicável e as condições expressamente "
+       "acordadas pelas partes."),
+    _c("PRAZO PARA EXECUÇÃO",
+       "O prazo total para execução da obra é de {PRAZO_DIAS} dias corridos, de {DATA_INICIO} a {DATA_FIM}, conforme "
+       "o cronograma físico do Anexo II. Eventual tolerância e condições de prorrogação devem ser expressamente "
+       "acordadas pelas partes."),
+    _c("PRAZO PARA EXECUÇÃO",
+       "Interrupções e prorrogações do prazo de execução deverão ser registradas e expressamente acordadas pelas partes."),
+    _c("CONDIÇÕES GERAIS",
+       "O CONSTRUTOR limitar-se-á a executar o que consta na planta, sob pena de o CONTRATANTE enjeitá-la ou "
+       "recebê-la com abatimento no preço."),
+    _c("CONDIÇÕES GERAIS",
+       "O CONSTRUTOR deverá apresentar as notas fiscais e/ou comprovantes ao CONTRATANTE referentes aos materiais "
+       "adquiridos para a obra.", 'MODALIDADE="COM"'),
+    _c("CONDIÇÕES GERAIS",
+       "Fica acordado o pagamento apenas do montante previsto na cláusula de preço e forma de pagamento, sem "
+       "reembolso de materiais, que são adquiridos diretamente pelo CONTRATANTE.", 'MODALIDADE="SEM"'),
+    _c("CONDIÇÕES GERAIS", "São atividades do CONSTRUTOR: {ATIVIDADES}"),
+    _c("CONDIÇÕES GERAIS",
+       "O CONTRATANTE será responsável pela compra e confecção das placas de identificação da obra, bem como pela "
+       "disposição do projeto impresso para eventuais fiscalizações da Prefeitura Municipal, sendo o CONSTRUTOR "
+       "responsável por mantê-lo disponível e em boas condições, apresentando-o à fiscalização, caso solicitado."),
+    _c("CONDIÇÕES GERAIS", "O presente contrato passa a vigorar entre as partes a partir da sua assinatura."),
+    _c("CONDIÇÕES GERAIS",
+       "O descumprimento das obrigações sujeitará a parte responsável às consequências previstas na legislação "
+       "aplicável e nas condições expressamente acordadas."),
+    _c("DO FORO",
+       "Para dirimir quaisquer controvérsias oriundas deste CONTRATO, as partes elegem o foro da comarca de {CIDADE}."),
+    _c("DO FORO",
+       "Por estarem assim justos e contratados, firmam o presente instrumento, em duas vias de igual teor, "
+       "juntamente com 2 (duas) testemunhas.", tipo="paragrafo"),
+]
+CONTRATO = [dict(ordem=(i + 1) * 10, ativo=True, **c) for i, c in enumerate(_CLAUSULAS)]
+
+
 def secao_da_linha(r):
     atual = None
     for inicio, nome in SECOES:
@@ -249,6 +374,26 @@ def main(caminho):
         if nome:
             categorias.append({"categoria": nome, "descricao": str(cot.cell(r, 4).value or "").strip()})
 
+
+    # ── Cronograma físico (aba Cronograma): dias = ARREDONDAR_CIMA(k/125 × área) ──
+    cr = wf["Cronograma"]
+    cronograma = []
+    for r in range(12, 53):
+        nome = str(cr.cell(r, 2).value or "").strip()
+        g = str(cr.cell(r, 7).value or "")
+        if not nome or not g:
+            continue
+        m = re.fullmatch(r"=ROUNDUP\(\(\(([\d.]+)/125\)\*Parâmetros!\$D\$16\),0\)", g.replace(" ", ""))
+        if m:
+            formula = "ARREDONDAR_CIMA(" + m.group(1).replace(".", ",") + "/125*AREA)"
+        elif "Parâmetros!J14" in g:  # enchimento da laje: ×1,7 com pé-direito duplo
+            formula = 'ARREDONDAR_CIMA(4/125*AREA*SE(PE_DIREITO_DUPLO="NENHUM"; 1; 1,7))'
+        else:
+            raise SystemExit(f"Cronograma linha {r}: fórmula não reconhecida: {g}")
+        cronograma.append({"id": f"E{len(cronograma) + 1:02d}", "ordem": len(cronograma) + 1,
+                           "etapa": nome[0].upper() + nome[1:], "formula_dias": formula, "ativo": True})
+    print(f"Cronograma: {len(cronograma)} etapas")
+
     # ── Empresa, termos e BDI ──
     cf = wv["CONFIGURAÇÃO"]
     empresa = {
@@ -272,6 +417,7 @@ def main(caminho):
         "formula_area_equivalente": "MURO/4 + AREA + PISO_EXT/20 + GOURMET/2 + PISCINA + SAUNA + GARAGEM",
         "fator_acabamento_alto": "",
         "dias_validade_precos": 120,
+        "atividades_construtor_padrao": ATIVIDADES_PADRAO,
     }
     termos = [
         "Esta proposta é válida por 10 dias.",
@@ -299,6 +445,8 @@ def main(caminho):
         "rateio": {"COM": rateio("Cotação Cliente"), "SEM": rateio("Cotação Cliente sem mat")},
         "categorias_material": categorias,
         "termos": termos,
+        "cronograma": cronograma,
+        "contrato": CONTRATO,
     }
     with open(os.path.join(RAIZ, "data", "modelo-padrao.json"), "w", encoding="utf-8") as f:
         json.dump(modelo, f, ensure_ascii=False, indent=1)

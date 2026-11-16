@@ -1,6 +1,6 @@
 'use strict';
 /**
- * proposta.js — proposta ao cliente (abas "Cotação Cliente" e "Cotação Cliente sem mat").
+ * proposta.js — documentos A4: proposta ao cliente (abas "Cotação Cliente"/"sem mat") e contrato (aba Contrato).
  * Monta uma folha A4 e usa a impressão do navegador para gerar o PDF.
  * Sem todos os dados (itens pendentes ou validação incompleta), sai marcada como PRÉVIA.
  */
@@ -16,17 +16,11 @@ function abrirProposta(modalidade) {
 
   const linhaFase = (f) => `<tr><td><strong>${esc(f.fase)}</strong></td><td>${esc(f.descricao)}</td><td class="num">${moeda(f.valor)}</td></tr>`;
   const textoEscopo = String(orc.escopo || '').split(/\n+/).map((t) => t.trim()).filter(Boolean);
-  const escopo = montarEscopo(p);
+  const escopo = Contrato.escopo(p);
 
   el('impressao-folha').innerHTML = `
     ${previa ? '<div class="marca-previa" aria-hidden="true">PRÉVIA</div>' : ''}
-    <header class="pr-topo">
-      <img src="assets/logo-engenharia.png" alt="" class="pr-logo">
-      <div>
-        <strong>${esc(e.razao_social)}</strong>${e.cnpj ? ' | ' + esc(e.cnpj) : ''}<br>
-        <span>${[e.endereco, e.telefone, e.email].filter(Boolean).map(esc).join('  |  ')}</span>
-      </div>
-    </header>
+    ${cabecalhoFolha(e)}
 
     <h1 class="pr-titulo">Proposta de orçamento <span>${com ? 'com material incluso' : 'sem material (mão de obra e administração)'}</span></h1>
     ${previa ? `<p class="pr-aviso">Documento de prévia: ${r.pendentes ? r.pendentes + ' item(ns) sem preço ou quantidade' : 'há pendências na validação'}. Não enviar ao cliente.</p>` : ''}
@@ -90,57 +84,78 @@ function abrirProposta(modalidade) {
   window.scrollTo(0, 0);
 }
 
-/** Escopo da obra montado a partir dos parâmetros do orçamento: [rótulo, texto][]. */
-function montarEscopo(p) {
-  const n = (v) => Number(v) || 0;
-  const m2 = (v) => num2(v) + ' m²';
-  const minus = (s) => String(s || '').toLowerCase();
-  const plural = (q, um, varios) => `${q} ${q === 1 ? um : varios}`;
-  const PAV = {
-    'TÉRREO': 'residência térrea',
-    'SUBSOLO+TÉRREO': 'residência com subsolo e térreo',
-    'SUBSOLO+TÉRREO+1PAV': 'residência com subsolo, térreo e pavimento superior',
-    'TÉRREO+1PAV': 'sobrado (térreo + 1 pavimento)',
-    'TÉRREO+2PAV': 'residência com térreo + 2 pavimentos',
-  };
-  const linhas = [];
+/** Faixa verde com logo e dados da empresa (proposta e contrato). */
+function cabecalhoFolha(e) {
+  return `
+    <header class="pr-topo">
+      <img src="assets/logo-engenharia.png" alt="" class="pr-logo">
+      <div>
+        <strong>${esc(e.razao_social)}</strong>${e.cnpj ? ' | ' + esc(e.cnpj) : ''}<br>
+        <span>${[e.endereco, e.telefone, e.email].filter(Boolean).map(esc).join('  |  ')}</span>
+      </div>
+    </header>`;
+}
 
-  linhas.push(['Obra', `Construção de ${PAV[p.pavimentos] || 'residência'}${n(p.area) ? ' com ' + m2(p.area) + ' de área construída' : ''}.`]);
+/** Contrato (aba Contrato da planilha) + Anexo I (parcelas) + Anexo II (cronograma físico). */
+function abrirContrato() {
+  const orc = editor.orc;
+  const p = orc.parametros;
+  const e = dados.modelo.empresa || {};
+  const { contrato: k, parcelas: pr, crono } = editor.fase2;
+  const minuta = !k.completo;
 
-  const carac = [];
-  if (p.terreno) carac.push(p.terreno === 'PLANO' ? 'terreno plano' : 'terreno em ' + minus(p.terreno));
-  if (p.telhado) carac.push('telhado ' + minus(p.telhado));
-  if (p.acabamento) carac.push('acabamento padrão ' + minus(p.acabamento));
-  if (p.pintura) carac.push(p.pintura === 'NORMAL' ? 'pintura lisa' : 'pintura com grafiato/textura');
-  if (p.pe_direito_duplo && p.pe_direito_duplo !== 'NENHUM') carac.push('pé-direito duplo na ' + minus(p.pe_direito_duplo));
-  if (carac.length) linhas.push(['Características', carac.join(', ').replace(/^./, (c) => c.toUpperCase()) + '.']);
+  el('impressao-folha').innerHTML = `
+    ${minuta ? '<div class="marca-previa" aria-hidden="true">MINUTA</div>' : ''}
+    ${cabecalhoFolha(e)}
+    <h1 class="pr-titulo ct-titulo">Contrato de construção por empreitada
+      <span>${k.modalidade === 'SEM' ? 'mão de obra — materiais por conta do contratante' : 'global — mão de obra e materiais'}</span></h1>
+    ${minuta ? `<div class="pr-aviso"><strong>Minuta — não assinar.</strong> Pendências:<ul>${k.pendencias.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}
 
-  const comodos = [
-    [n(p.quartos), 'quarto', 'quartos'], [n(p.banheiros), 'banheiro', 'banheiros'], [n(p.lavabos), 'lavabo', 'lavabos'],
-    [n(p.cozinhas), 'cozinha', 'cozinhas'], [n(p.duchas), 'ducha', 'duchas'], [n(p.escadas), 'escada', 'escadas'],
-  ].filter(([q]) => q > 0).map(([q, um, v]) => plural(q, um, v));
-  if (comodos.length) linhas.push(['Ambientes', comodos.join(', ') + '.']);
+    ${k.secoes.map((s) => `
+      <section class="ct-secao">
+        ${s.titulo ? `<h2>${esc(s.titulo)}</h2>` : ''}
+        ${s.itens.map((i) => `<p class="${i.tipo === 'clausula' ? 'ct-clausula' : 'ct-paragrafo'}">${i.tipo === 'clausula' ? `<strong>Cláusula ${esc(i.numero)}.</strong> ` : ''}${marcarPendentes(i.texto)}</p>`).join('')}
+      </section>`).join('')}
 
-  const areas = [];
-  if (n(p.gourmet)) areas.push('área gourmet ' + m2(p.gourmet));
-  if (n(p.piscina)) areas.push('piscina ' + m2(p.piscina));
-  if (n(p.sauna)) areas.push('sauna ' + m2(p.sauna));
-  if (n(p.garagem)) areas.push('garagem ' + m2(p.garagem));
-  if (n(p.piso_ext)) areas.push('área externa com piso ' + m2(p.piso_ext));
-  if (n(p.grama)) areas.push('área externa com grama ' + m2(p.grama));
-  if (n(p.muro)) areas.push('muros ' + num2(p.muro) + ' m lineares');
-  if (n(p.gesso)) areas.push('gesso (sancas e rebaixos) ' + m2(p.gesso));
-  if (areas.length) linhas.push(['Áreas complementares', areas.join('; ').replace(/^./, (c) => c.toUpperCase()) + '.']);
+    <p class="ct-local">${esc(p.cidade || '____________________')}, ______ de ________________________ de __________.</p>
 
-  if (p.portao === 'SIM') {
-    const med = n(p.portao_largura) && n(p.portao_altura) ? ` de ${num2(p.portao_largura)} × ${num2(p.portao_altura)} m` : '';
-    linhas.push(['Portão', `Incluso portão${med}.`]);
-  } else if (p.portao === 'NÃO') {
-    linhas.push(['Portão', 'Não incluso.']);
-  }
-  if (p.terraplanagem === 'CONSTRUTOR') linhas.push(['Terraplanagem', 'Inclusa no orçamento.']);
-  if (p.terraplanagem === 'CONTRATANTE') linhas.push(['Terraplanagem', 'Por conta do contratante (fora deste orçamento).']);
-  return linhas;
+    <div class="ct-assinaturas">
+      <div><div class="linha-assinatura"></div><strong>CONTRATANTE</strong><span>${esc(p.cliente_nome || '')}${p.cliente_cpf ? ' · CPF ' + esc(p.cliente_cpf) : ''}</span></div>
+      <div><div class="linha-assinatura"></div><strong>CONSTRUTOR</strong><span>${esc(e.razao_social || '')}${e.cnpj && !/x/i.test(e.cnpj) ? ' · CNPJ ' + esc(e.cnpj) : ''}</span></div>
+      <div><div class="linha-assinatura"></div><strong>TESTEMUNHA 1</strong><span>Nome / CPF</span></div>
+      <div><div class="linha-assinatura"></div><strong>TESTEMUNHA 2</strong><span>Nome / CPF</span></div>
+    </div>
+    <p class="ct-nota">Minuta sujeita à revisão jurídica e ao preenchimento integral do escopo e das condições comerciais.</p>
+
+    <section class="ct-anexo">
+      <h2>Anexo I — Cronograma de pagamentos</h2>
+      ${pr.ok ? `
+      <table class="pr-tabela">
+        <thead><tr><th>Parcela</th><th>Vencimento</th><th class="num">Valor (R$)</th></tr></thead>
+        <tbody>${pr.lista.map((x) => `<tr><td>${esc(x.rotulo)}</td><td>${dataBr(x.vencimento)}</td><td class="num">${moeda(x.valor)}</td></tr>`).join('')}</tbody>
+        <tfoot><tr><td colspan="2">Total do contrato</td><td class="num">${moeda(pr.total)}</td></tr></tfoot>
+      </table>` : `<p class="pr-aviso">Parcelas não geradas: falta ${esc(pr.faltas.join(', '))}.</p>`}
+    </section>
+
+    <section class="ct-anexo">
+      <h2>Anexo II — Cronograma físico</h2>
+      ${crono.fim ? `
+      <table class="pr-tabela">
+        <thead><tr><th>Nº</th><th>Etapa</th><th>Início</th><th>Término</th><th class="num">Dias</th></tr></thead>
+        <tbody>${crono.etapas.filter((x) => x.inicio).map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.etapa)}</td><td>${dataBr(x.inicio)}</td><td>${dataBr(x.fim)}</td><td class="num">${x.dias}</td></tr>`).join('')}</tbody>
+        <tfoot><tr><td colspan="2">Prazo total</td><td>${dataBr(crono.inicio)}</td><td>${dataBr(crono.fim)}</td><td class="num">${crono.prazo_dias}</td></tr></tfoot>
+      </table>` : '<p class="pr-aviso">Cronograma sem datas: informe o início da obra.</p>'}
+    </section>`;
+
+  document.title = `Contrato - ${p.cliente_nome || 'cliente'}`;
+  el('impressao').hidden = false;
+  document.body.classList.add('modo-impressao');
+  el('impressao').scrollTop = 0;
+}
+
+/** Destaca no PDF os trechos "[PENDENTE: …]" (o texto já vem sem HTML). */
+function marcarPendentes(texto) {
+  return esc(texto).replace(/\[PENDENTE:?[^\]]*\]/g, (m) => `<mark class="ct-pendente">${m}</mark>`);
 }
 
 function fecharImpressao() {

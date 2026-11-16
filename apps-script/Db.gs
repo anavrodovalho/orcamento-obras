@@ -26,6 +26,8 @@ function cabecalhos_(nome) {
     case ABA_CFG_RATEIO: return ['modalidade', 'ordem', 'fase', 'descricao', 'percentual'];
     case ABA_CFG_CATEGORIAS: return ['categoria', 'descricao'];
     case ABA_CFG_TERMOS: return ['ordem', 'texto'];
+    case ABA_CFG_CRONOGRAMA: return ['id', 'ordem', 'etapa', 'formula_dias', 'ativo'];
+    case ABA_CFG_CONTRATO: return ['ordem', 'secao', 'tipo', 'condicao', 'texto', 'ativo'];
     default: throw new Error('Aba desconhecida: ' + nome);
   }
 }
@@ -39,6 +41,8 @@ function colunasTexto_(nome) {
     case ABA_LOG: return ['data_hora', 'registro_id'];
     case ABA_CFG_ITENS: return ['id', 'formula_qtd'];
     case ABA_CFG_TERMOS: return ['texto'];
+    case ABA_CFG_CRONOGRAMA: return ['id', 'formula_dias'];
+    case ABA_CFG_CONTRATO: return ['condicao', 'texto'];
     default: return [];
   }
 }

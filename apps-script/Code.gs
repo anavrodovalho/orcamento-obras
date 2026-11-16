@@ -29,6 +29,8 @@ var ABA_CFG_ITENS = 'cfg_itens';
 var ABA_CFG_RATEIO = 'cfg_rateio';
 var ABA_CFG_CATEGORIAS = 'cfg_categorias';
 var ABA_CFG_TERMOS = 'cfg_termos';
+var ABA_CFG_CRONOGRAMA = 'cfg_cronograma';
+var ABA_CFG_CONTRATO = 'cfg_contrato';
 
 var SESSAO_HORAS = 12;
 var CACHE_MAX_SEGUNDOS = 21600;

@@ -82,7 +82,9 @@ const consultas = {
           <span class="nota">Variáveis: AEQ, FATOR, AREA, MURO, GRAMA, PISO_EXT, GOURMET, PISCINA, SAUNA, GARAGEM, GESSO, BANHEIROS, LAVABOS, QUARTOS, COZINHAS, DUCHAS, ESCADAS, TEM_GOURMET, TERRENO, TELHADO, PAVIMENTOS, ACABAMENTO, PINTURA, PORTAO, PORTAO_LARGURA, PORTAO_ALTURA, TERRAPLANAGEM, REGISTROS_SAUNA, JANELAS_SAUNA, REGISTROS_GOURMET</span></div>
         <div class="barra-ferramentas"><input id="md-busca" class="campo" type="search" placeholder="Buscar…" value="${esc(this.buscaModelo)}"></div>
         <div id="md-tabela"></div>
-      </div>`;
+      </div>
+      ${this.cartaoCronograma(modelo, vars)}
+      ${this.cartaoContrato(modelo, vars)}`;
     const desenhar = () => {
       const b = semAcento(this.buscaModelo);
       const lista = linhas.filter((l) => !b || semAcento([l.id, l.grupo, l.categoria, l.codigo, l.descricao_manual, l.ref && l.ref.descricao, l.formula_qtd].join(' ')).includes(b));
@@ -100,5 +102,50 @@ const consultas = {
     };
     el('md-busca').addEventListener('input', debounce((e) => { this.buscaModelo = e.target.value; desenhar(); }, 150));
     desenhar();
+  },
+
+  /** cfg_cronograma: fórmula de dias de cada etapa testada com 100 m² e com 150 m². */
+  cartaoCronograma(modelo, vars) {
+    const etapas = modelo.cronograma || [];
+    const c100 = Cronograma.calcular({ etapas, vars, data_inicio: '2025-01-01' });
+    const c150 = Cronograma.calcular({ etapas, vars: Object.assign({}, vars, { AREA: 150 }), data_inicio: '2025-01-01' });
+    return `<div class="cartao">
+      <div class="cartao-titulo"><h2>Cronograma (cfg_cronograma)</h2>
+        <span class="nota">${etapas.length} etapas · prazo ${c100.prazo_dias ?? '—'} dias com 100 m², ${c150.prazo_dias ?? '—'} dias com 150 m²</span></div>
+      ${c100.erros.length ? `<p class="aviso-erro">${esc(c100.erros.join(' · '))}</p>` : ''}
+      <div class="tabela-rolagem"><table class="tabela tabela-modelo">
+        <thead><tr><th>ID</th><th>Etapa</th><th>Fórmula dos dias</th><th class="num">100 m²</th><th class="num">150 m²</th></tr></thead>
+        <tbody>${c100.etapas.map((e, i) => `<tr class="${e.erro ? 'linha-pendente' : ''}"><td>${esc(e.id)}</td><td>${esc(e.etapa)}</td>
+          <td><code>${esc(e.formula_dias)}</code>${e.erro ? `<br><small class="erro-campo">${esc(e.erro)}</small>` : ''}</td>
+          <td class="num">${e.dias ?? '—'}</td><td class="num">${c150.etapas[i].dias ?? '—'}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </div>`;
+  },
+
+  /** cfg_contrato: cláusulas, condições e campos aceitos. */
+  cartaoContrato(modelo, vars) {
+    const linhas = (modelo.contrato || []).map((c) => {
+      let cond = '';
+      if (String(c.condicao || '').trim()) {
+        const t = Formula.calcular(c.condicao, Object.assign({}, vars, { MODALIDADE: 'COM' }));
+        if (t.erro) cond = t.erro;
+      }
+      const desconhecidos = (String(c.texto).match(/\{([A-Z_]+)\}/g) || []).filter((m) => !(m.slice(1, -1) in Contrato.CAMPOS));
+      return Object.assign({}, c, { erro: cond || (desconhecidos.length ? 'campo desconhecido: ' + desconhecidos.join(', ') : '') });
+    });
+    const erros = linhas.filter((l) => l.erro).length;
+    return `<div class="cartao">
+      <div class="cartao-titulo"><h2>Contrato (cfg_contrato)</h2>
+        <span class="nota">${linhas.length} linhas · ${erros} com erro · numeração das cláusulas é automática</span></div>
+      <p class="nota">Campos aceitos no texto: ${Object.keys(Contrato.CAMPOS).map((k) => `<code>{${k}}</code> ${esc(Contrato.CAMPOS[k])}`).join(' · ')}.
+        Na coluna <em>condicao</em> vale o formato das fórmulas, mais a variável <code>MODALIDADE</code> ("COM"/"SEM"). Ex.: <code>MODALIDADE="SEM"</code>.</p>
+      <div class="tabela-rolagem"><table class="tabela tabela-modelo">
+        <thead><tr><th class="num">Ordem</th><th>Seção</th><th>Tipo</th><th>Condição</th><th>Texto</th></tr></thead>
+        <tbody>${linhas.map((l) => `<tr class="${l.erro ? 'linha-pendente' : ''}${l.ativo === false ? ' linha-zerada' : ''}">
+          <td class="num">${esc(String(l.ordem))}</td><td><small>${esc(l.secao)}</small></td><td>${esc(l.tipo)}</td>
+          <td>${l.condicao ? `<code>${esc(l.condicao)}</code>` : '—'}</td>
+          <td class="quebra">${esc(l.texto)}${l.erro ? `<br><small class="erro-campo">${esc(l.erro)}</small>` : ''}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </div>`;
   },
 };

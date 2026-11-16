@@ -26,7 +26,8 @@ function modeloPadrao_() {
   "observacoes_proposta": "O início da prestação de serviço se dará apenas após a assinatura do contrato. \nCabos adicionais para instalação do relógio.",
   "formula_area_equivalente": "MURO/4 + AREA + PISO_EXT/20 + GOURMET/2 + PISCINA + SAUNA + GARAGEM",
   "fator_acabamento_alto": "",
-  "dias_validade_precos": 120
+  "dias_validade_precos": 120,
+  "atividades_construtor_padrao": "execução da mão de obra de fundação, estrutura, alvenaria, instalações hidráulicas e elétricas, revestimentos, cobertura, pintura e acabamentos, conforme projeto aprovado, além da gestão da equipe e da limpeza periódica da obra."
  },
  "bdi": {
   "administracao_central": 0.1265,
@@ -1942,6 +1943,457 @@ function modeloPadrao_() {
   "Em caso de obras financiadas, o cliente se responsabiliza por honrar o repasse dos pagamentos ao construtor dentro do cronograma.",
   "A obra só será iniciada após a emissão do Alvará junto a Prefeitura, ficando esta documentação, de responsabilidade do Contratante.",
   "{TERRAPLANAGEM}"
+ ],
+ "cronograma": [
+  {
+   "id": "E01",
+   "ordem": 1,
+   "etapa": "Definição do projeto",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E02",
+   "ordem": 2,
+   "etapa": "Terraplanagem e infra da obra",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E03",
+   "ordem": 3,
+   "etapa": "Marcação e Escavação Alicerce",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E04",
+   "ordem": 4,
+   "etapa": "Colocação das ferragens",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E05",
+   "ordem": 5,
+   "etapa": "Enchimento Alicerce",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E06",
+   "ordem": 6,
+   "etapa": "Impermeabilização",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E07",
+   "ordem": 7,
+   "etapa": "Alvenaria (casa e muros) e colunas",
+   "formula_dias": "ARREDONDAR_CIMA(22,5/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E08",
+   "ordem": 8,
+   "etapa": "Vigas e fechamentos",
+   "formula_dias": "ARREDONDAR_CIMA(12/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E09",
+   "ordem": 9,
+   "etapa": "Preparação para Laje e conduítes",
+   "formula_dias": "ARREDONDAR_CIMA(9/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E10",
+   "ordem": 10,
+   "etapa": "Enchimento laje",
+   "formula_dias": "ARREDONDAR_CIMA(4/125*AREA*SE(PE_DIREITO_DUPLO=\"NENHUM\"; 1; 1,7))",
+   "ativo": true
+  },
+  {
+   "id": "E11",
+   "ordem": 11,
+   "etapa": "Chapisco/emboço, alvenaria(2o piso se houver)",
+   "formula_dias": "ARREDONDAR_CIMA(13/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E12",
+   "ordem": 12,
+   "etapa": "Hidráulica",
+   "formula_dias": "ARREDONDAR_CIMA(5/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E13",
+   "ordem": 13,
+   "etapa": "Elétrica",
+   "formula_dias": "ARREDONDAR_CIMA(9/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E14",
+   "ordem": 14,
+   "etapa": "Contra-piso",
+   "formula_dias": "ARREDONDAR_CIMA(10/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E15",
+   "ordem": 15,
+   "etapa": "Vidraçaria",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E16",
+   "ordem": 16,
+   "etapa": "Massa corrida",
+   "formula_dias": "ARREDONDAR_CIMA(15/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E17",
+   "ordem": 17,
+   "etapa": "Piso e revestimentos",
+   "formula_dias": "ARREDONDAR_CIMA(10/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E18",
+   "ordem": 18,
+   "etapa": "Telhado (2a laje se houver),calhas e rufos",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E19",
+   "ordem": 19,
+   "etapa": "Pingadeiras e retoques",
+   "formula_dias": "ARREDONDAR_CIMA(10/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E20",
+   "ordem": 20,
+   "etapa": "Grama e cimentar área externa",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E21",
+   "ordem": 21,
+   "etapa": "Fachada e frente",
+   "formula_dias": "ARREDONDAR_CIMA(10/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E22",
+   "ordem": 22,
+   "etapa": "Mármores(Pias, balcões etc)",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E23",
+   "ordem": 23,
+   "etapa": "Pintura",
+   "formula_dias": "ARREDONDAR_CIMA(21/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E24",
+   "ordem": 24,
+   "etapa": "Final (Sanitários, válvulas, etc)",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  },
+  {
+   "id": "E25",
+   "ordem": 25,
+   "etapa": "Limpeza e inspeção final",
+   "formula_dias": "ARREDONDAR_CIMA(7/125*AREA)",
+   "ativo": true
+  }
+ ],
+ "contrato": [
+  {
+   "ordem": 10,
+   "ativo": true,
+   "secao": "IDENTIFICAÇÃO DAS PARTES CONTRATANTES",
+   "tipo": "paragrafo",
+   "condicao": "",
+   "texto": "Neste presente contrato, define-se por CONTRATANTE o(a) Sr(a). {CONTRATANTE}, inscrito(a) no CPF sob o nº {CPF}, e por CONTRATADO, doravante denominado CONSTRUTOR, a empresa {EMPRESA}, inscrita no CNPJ sob o nº {CNPJ}, localizada em {ENDERECO_EMPRESA}."
+  },
+  {
+   "ordem": 20,
+   "ativo": true,
+   "secao": "IDENTIFICAÇÃO DAS PARTES CONTRATANTES",
+   "tipo": "paragrafo",
+   "condicao": "",
+   "texto": "As partes acima identificadas têm, entre si, justo e acertado o presente Contrato de Construção por Empreitada, que se regerá pelas cláusulas seguintes e pelas condições descritas no presente."
+  },
+  {
+   "ordem": 30,
+   "ativo": true,
+   "secao": "DO OBJETO DO CONTRATO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O presente tem como OBJETO a construção de um imóvel residencial de {AREA} m², a ser construído em {ENDERECO_OBRA} - {CIDADE}, na modalidade de {MODALIDADE_TEXTO}."
+  },
+  {
+   "ordem": 40,
+   "ativo": true,
+   "secao": "DO OBJETO DO CONTRATO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "A construção será executada conforme consta na planta elaborada pelo(a) Engenheiro(a)/Arquiteto(a) responsável, após aprovada junto à Prefeitura Municipal do local do respectivo imóvel."
+  },
+  {
+   "ordem": 50,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "A execução das obras será administrada pelo CONSTRUTOR, facultando-lhe a contratação de pedreiros e ajudantes, os quais terão vínculo único e direto com o mesmo, que ficará exclusivamente responsável pelo pagamento e por todos os encargos existentes."
+  },
+  {
+   "ordem": 60,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O CONSTRUTOR fornecerá, além do pessoal, todos os recursos necessários à concretização da obra, como ferramentas, EPIs (Equipamentos de Proteção Individual), refeições e água potável."
+  },
+  {
+   "ordem": 70,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "Quaisquer danos causados a terceiros e provenientes da execução dos trabalhos, agindo dolosa ou culposamente, serão de inteira responsabilidade do CONSTRUTOR, mesmo que praticados pelos seus ajudantes."
+  },
+  {
+   "ordem": 80,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O CONSTRUTOR terá completa e irrestrita liberdade para executar seus trabalhos, não necessitando predeterminar horários ou funções, ficando assim caracterizado que o mesmo faz a gestão das atividades de execução da obra, não mantendo nenhum vínculo trabalhista com o CONTRATANTE."
+  },
+  {
+   "ordem": 90,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "TERRAPLANAGEM=\"CONTRATANTE\"",
+   "texto": "Limpeza e terraplanagem serão contratadas e pagas pelo CONTRATANTE, fora do preço deste contrato."
+  },
+  {
+   "ordem": 100,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "TERRAPLANAGEM=\"CONSTRUTOR\"",
+   "texto": "A terraplanagem orçada será providenciada pelo CONSTRUTOR, conforme o escopo contratado."
+  },
+  {
+   "ordem": 110,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "E(TERRAPLANAGEM<>\"CONSTRUTOR\"; TERRAPLANAGEM<>\"CONTRATANTE\")",
+   "texto": "[PENDENTE: definir o responsável pela terraplanagem]"
+  },
+  {
+   "ordem": 120,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "Escopo contratado: {ESCOPO}"
+  },
+  {
+   "ordem": 130,
+   "ativo": true,
+   "secao": "DA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "Fica sob responsabilidade do CONSTRUTOR a mão de obra referente à construção da calçada e dos muros."
+  },
+  {
+   "ordem": 140,
+   "ativo": true,
+   "secao": "DOS MATERIAIS",
+   "tipo": "clausula",
+   "condicao": "MODALIDADE=\"SEM\"",
+   "texto": "O CONTRATANTE será responsável por toda compra e entrega de material de fundação, alvenaria, hidráulica, elétrica, acabamento e serralheria (incluindo o portão frontal), bem como pelos recursos para armazenamento seguro destes itens (contêiner ou barracão provisório com tranca e fechadura em pleno funcionamento)."
+  },
+  {
+   "ordem": 150,
+   "ativo": true,
+   "secao": "DOS MATERIAIS",
+   "tipo": "clausula",
+   "condicao": "MODALIDADE=\"COM\"",
+   "texto": "O CONSTRUTOR será responsável por toda compra e entrega de material de fundação, alvenaria, hidráulica, elétrica, acabamento e serralheria (incluindo o portão frontal), bem como pelos recursos para armazenamento seguro destes itens (contêiner ou barracão provisório com tranca e fechadura em pleno funcionamento). O CONSTRUTOR também fica obrigado a apresentar ao CONTRATANTE no mínimo 3 (três) cotações, a não ser que seja dispensado pelo CONTRATANTE formalmente."
+  },
+  {
+   "ordem": 160,
+   "ativo": true,
+   "secao": "DOS MATERIAIS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O CONSTRUTOR será responsável por trancar diariamente, em local seguro, todos os materiais da obra, bem como os respectivos equipamentos e ferramentas utilizados na execução do serviço, sendo responsabilizado a repor os possíveis prejuízos causados em caso de desleixo e esquecimento destes itens fora dos locais mencionados."
+  },
+  {
+   "ordem": 170,
+   "ativo": true,
+   "secao": "DOS MATERIAIS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O CONSTRUTOR se compromete a contratar profissionais com experiência comprovada e que sejam plenamente capazes de executar a obra em sua totalidade de forma segura, eficaz e sem desperdícios."
+  },
+  {
+   "ordem": 180,
+   "ativo": true,
+   "secao": "DOS MATERIAIS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "Caso seja comprovado desperdício, inutilização ou extravio de material, ficará o CONSTRUTOR obrigado a restituí-los ao CONTRATANTE."
+  },
+  {
+   "ordem": 190,
+   "ativo": true,
+   "secao": "DAS VISTORIAS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "Resta facultado ao CONTRATANTE, bem como ao engenheiro/arquiteto responsável pela planta, realizar vistorias a qualquer dia ou horário, concernentes à execução das obras, cabendo ao CONSTRUTOR se comprometer a aceitar ou não os pareceres de ambos."
+  },
+  {
+   "ordem": 200,
+   "ativo": true,
+   "secao": "DO PREÇO E DA FORMA DE PAGAMENTO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "Fica ajustado que o CONTRATANTE pagará ao CONSTRUTOR o valor total de R$ {VALOR_TOTAL}, sendo R$ {ENTRADA} de entrada (adiantamento), a ser descontada do valor total, para custeio de ferramentas e insumos pagos pelo CONSTRUTOR, e o saldo de R$ {SALDO} em {N_PARCELAS} parcela(s) de R$ {VALOR_PARCELA} (a última de R$ {ULTIMA_PARCELA}, por ajuste de centavos), a cada {INTERVALO} dias contados de {DATA_BASE}, com a última no término previsto da obra ({DATA_FIM}), conforme o cronograma de pagamentos do Anexo I."
+  },
+  {
+   "ordem": 210,
+   "ativo": true,
+   "secao": "DO PREÇO E DA FORMA DE PAGAMENTO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O valor a ser pago aos pedreiros e ajudantes será feito individualmente pelo CONSTRUTOR e às suas expensas, visto que os mesmos possuem vínculo única e exclusivamente com este, comprometendo-se a pagá-los semanalmente."
+  },
+  {
+   "ordem": 220,
+   "ativo": true,
+   "secao": "DA RESCISÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "A rescisão por iniciativa do CONTRATANTE observará a legislação aplicável e as condições expressamente acordadas pelas partes, com apuração dos serviços executados e valores devidos."
+  },
+  {
+   "ordem": 230,
+   "ativo": true,
+   "secao": "DA RESCISÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "A rescisão por iniciativa do CONSTRUTOR observará a legislação aplicável e as condições expressamente acordadas pelas partes."
+  },
+  {
+   "ordem": 240,
+   "ativo": true,
+   "secao": "PRAZO PARA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O prazo total para execução da obra é de {PRAZO_DIAS} dias corridos, de {DATA_INICIO} a {DATA_FIM}, conforme o cronograma físico do Anexo II. Eventual tolerância e condições de prorrogação devem ser expressamente acordadas pelas partes."
+  },
+  {
+   "ordem": 250,
+   "ativo": true,
+   "secao": "PRAZO PARA EXECUÇÃO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "Interrupções e prorrogações do prazo de execução deverão ser registradas e expressamente acordadas pelas partes."
+  },
+  {
+   "ordem": 260,
+   "ativo": true,
+   "secao": "CONDIÇÕES GERAIS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O CONSTRUTOR limitar-se-á a executar o que consta na planta, sob pena de o CONTRATANTE enjeitá-la ou recebê-la com abatimento no preço."
+  },
+  {
+   "ordem": 270,
+   "ativo": true,
+   "secao": "CONDIÇÕES GERAIS",
+   "tipo": "clausula",
+   "condicao": "MODALIDADE=\"COM\"",
+   "texto": "O CONSTRUTOR deverá apresentar as notas fiscais e/ou comprovantes ao CONTRATANTE referentes aos materiais adquiridos para a obra."
+  },
+  {
+   "ordem": 280,
+   "ativo": true,
+   "secao": "CONDIÇÕES GERAIS",
+   "tipo": "clausula",
+   "condicao": "MODALIDADE=\"SEM\"",
+   "texto": "Fica acordado o pagamento apenas do montante previsto na cláusula de preço e forma de pagamento, sem reembolso de materiais, que são adquiridos diretamente pelo CONTRATANTE."
+  },
+  {
+   "ordem": 290,
+   "ativo": true,
+   "secao": "CONDIÇÕES GERAIS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "São atividades do CONSTRUTOR: {ATIVIDADES}"
+  },
+  {
+   "ordem": 300,
+   "ativo": true,
+   "secao": "CONDIÇÕES GERAIS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O CONTRATANTE será responsável pela compra e confecção das placas de identificação da obra, bem como pela disposição do projeto impresso para eventuais fiscalizações da Prefeitura Municipal, sendo o CONSTRUTOR responsável por mantê-lo disponível e em boas condições, apresentando-o à fiscalização, caso solicitado."
+  },
+  {
+   "ordem": 310,
+   "ativo": true,
+   "secao": "CONDIÇÕES GERAIS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O presente contrato passa a vigorar entre as partes a partir da sua assinatura."
+  },
+  {
+   "ordem": 320,
+   "ativo": true,
+   "secao": "CONDIÇÕES GERAIS",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "O descumprimento das obrigações sujeitará a parte responsável às consequências previstas na legislação aplicável e nas condições expressamente acordadas."
+  },
+  {
+   "ordem": 330,
+   "ativo": true,
+   "secao": "DO FORO",
+   "tipo": "clausula",
+   "condicao": "",
+   "texto": "Para dirimir quaisquer controvérsias oriundas deste CONTRATO, as partes elegem o foro da comarca de {CIDADE}."
+  },
+  {
+   "ordem": 340,
+   "ativo": true,
+   "secao": "DO FORO",
+   "tipo": "paragrafo",
+   "condicao": "",
+   "texto": "Por estarem assim justos e contratados, firmam o presente instrumento, em duas vias de igual teor, juntamente com 2 (duas) testemunhas."
+  }
  ]
 };
 }

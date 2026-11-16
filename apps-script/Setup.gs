@@ -24,7 +24,7 @@ var DESCRICOES_EMPRESA = {
   responsavel_tecnico: 'Responsável técnico (assina a proposta)',
   telefone: 'Telefone',
   email: 'E-mail',
-  historia: 'Resumo da história da empresa (proposta)',
+  historia: 'Resumo da história da empresa (guardado; não sai mais na proposta, que mostra o escopo)',
   vantagem_1: 'Vantagem 1 (proposta)',
   vantagem_2: 'Vantagem 2 (proposta)',
   vantagem_3: 'Vantagem 3 (proposta)',
@@ -37,7 +37,8 @@ var DESCRICOES_EMPRESA = {
   observacoes_proposta: 'Texto padrão do campo "Adicionais" da proposta',
   formula_area_equivalente: 'Fórmula da área equivalente (AEQ) que multiplica os fatores de consumo',
   fator_acabamento_alto: 'Fator técnico do acabamento ALTO (reservado; POPULAR=0,4 e MÉDIO=0,8 na original)',
-  dias_validade_precos: 'Alerta quando a base SINAPI tiver mais que estes dias'
+  dias_validade_precos: 'Alerta quando a base SINAPI tiver mais que estes dias',
+  atividades_construtor_padrao: 'Texto padrão de {ATIVIDADES} no contrato (dá para trocar em cada orçamento)'
 };
 
 var DESCRICOES_BDI = {
@@ -56,7 +57,7 @@ function setupPlanilha() {
   var criadas = [];
 
   [ABA_ORCAMENTOS, ABA_ORC_ITENS, ABA_USUARIOS, ABA_LOG,
-    ABA_CFG_EMPRESA, ABA_CFG_BDI, ABA_CFG_ITENS, ABA_CFG_RATEIO, ABA_CFG_CATEGORIAS, ABA_CFG_TERMOS]
+    ABA_CFG_EMPRESA, ABA_CFG_BDI, ABA_CFG_ITENS, ABA_CFG_RATEIO, ABA_CFG_CATEGORIAS, ABA_CFG_TERMOS, ABA_CFG_CRONOGRAMA, ABA_CFG_CONTRATO]
     .forEach(function (nome) {
       if (!ss.getSheetByName(nome)) { criarAba_(ss, nome); criadas.push(nome); }
     });
@@ -67,6 +68,16 @@ function setupPlanilha() {
       return { chave: k, valor: modelo.empresa[k], descricao: DESCRICOES_EMPRESA[k] || '' };
     }));
     preenchidas.push(ABA_CFG_EMPRESA);
+  } else {
+    // Atualização de versão: acrescenta só as chaves novas, sem mexer nas que já existem.
+    var existentes = lerTabela_(ABA_CFG_EMPRESA).map(function (l) { return texto_(l.chave); });
+    var novas = Object.keys(modelo.empresa).filter(function (k) { return existentes.indexOf(k) < 0; });
+    if (novas.length) {
+      inserirLinhas_(ABA_CFG_EMPRESA, novas.map(function (k) {
+        return { chave: k, valor: modelo.empresa[k], descricao: DESCRICOES_EMPRESA[k] || '' };
+      }));
+      preenchidas.push(ABA_CFG_EMPRESA + ' (+' + novas.join(', ') + ')');
+    }
   }
   if (vazia_(ABA_CFG_BDI)) {
     inserirLinhas_(ABA_CFG_BDI, Object.keys(modelo.bdi).map(function (k) {
@@ -100,6 +111,15 @@ function setupPlanilha() {
     inserirLinhas_(ABA_CFG_TERMOS, modelo.termos.map(function (t, i) { return { ordem: i + 1, texto: t }; }));
     preenchidas.push(ABA_CFG_TERMOS);
   }
+  if (vazia_(ABA_CFG_CRONOGRAMA)) {
+    inserirLinhas_(ABA_CFG_CRONOGRAMA, modelo.cronograma);
+    preenchidas.push(ABA_CFG_CRONOGRAMA);
+  }
+  if (vazia_(ABA_CFG_CONTRATO)) {
+    inserirLinhas_(ABA_CFG_CONTRATO, modelo.contrato);
+    aba_(ABA_CFG_CONTRATO).getRange(2, 5, modelo.contrato.length, 1).setWrap(true);
+    preenchidas.push(ABA_CFG_CONTRATO);
+  }
 
   registrarLog_('sistema', 'setup', 'planilha', '', 'Abas criadas: ' + (criadas.join(', ') || 'nenhuma') +
     ' · Modelo preenchido: ' + (preenchidas.join(', ') || 'nenhum'));
@@ -117,7 +137,7 @@ function vazia_(nome) {
 function criarAba_(ss, nome) {
   var aba = ss.insertSheet(nome);
   var cab = cabecalhos_(nome);
-  aba.getRange(1, 1, 1, cab.length).setValues([cab]).setFontWeight('bold').setBackground('#0D2040').setFontColor('#FFFFFF');
+  aba.getRange(1, 1, 1, cab.length).setValues([cab]).setFontWeight('bold').setBackground('#052F34').setFontColor('#FFFFFF');
   aba.setFrozenRows(1);
   colunasTexto_(nome).forEach(function (campo) {
     var col = cab.indexOf(campo) + 1;

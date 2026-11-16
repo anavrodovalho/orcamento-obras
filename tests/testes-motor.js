@@ -134,5 +134,130 @@ teste('terraplanagem CONTRATANTE zera as linhas 44 e 45', () => {
   assert.strictEqual(r7.itens.find((i) => i.id === 'I044').status, 'OK');
 });
 
+// ───────────── Fase 2: cronograma, parcelas e contrato ─────────────
+const Cronograma = require('../js/cronograma.js');
+const Contrato = require('../js/contrato.js');
+const varsEx = Motor.variaveis(exemplo.parametros);
+const crono = Cronograma.calcular({ etapas: modelo.cronograma, vars: varsEx, data_inicio: exemplo.parametros.data_inicio, hoje: '2024-12-15' });
+
+console.log('\nCronograma (golden contra a aba Cronograma)');
+teste('25 etapas com os mesmos dias da planilha', () => {
+  // Cronograma!G12:G36 com 150 m² e pé-direito duplo na SALA (laje ×1,7)
+  assert.deepStrictEqual(crono.etapas.map((e) => e.dias),
+    [9, 9, 9, 9, 9, 9, 27, 15, 11, 9, 16, 6, 11, 12, 9, 18, 12, 9, 12, 9, 12, 9, 26, 9, 9]);
+});
+teste('término 23/07/2025, prazo 295 dias (9,83 meses)', () => {
+  assert.strictEqual(crono.inicio, '2024-10-01');
+  assert.strictEqual(crono.fim, '2025-07-23');
+  assert.strictEqual(crono.prazo_dias, 295);
+  perto(crono.meses, 9.833333333333334, 1e-12, 'meses');
+});
+teste('etapas encadeadas: cada uma começa quando a anterior termina', () => {
+  for (let i = 1; i < crono.etapas.length; i++) assert.strictEqual(crono.etapas[i].inicio, crono.etapas[i - 1].fim);
+});
+teste('sem pé-direito duplo a laje cai para 5 dias', () => {
+  const c = Cronograma.calcular({ etapas: modelo.cronograma, vars: Motor.variaveis(Object.assign({}, exemplo.parametros, { pe_direito_duplo: 'NENHUM' })), data_inicio: '2024-10-01' });
+  assert.strictEqual(c.etapas[9].dias, 5);
+});
+teste('ajuste de dias e execução: % ponderado e status', () => {
+  const c = Cronograma.calcular({
+    etapas: modelo.cronograma, vars: varsEx, data_inicio: '2024-10-01', hoje: '2024-10-25',
+    ajustes: { E01: 5 },
+    execucao: { E01: { conclusao: '2024-10-06' }, E02: { pct: 0.5 } },
+  });
+  assert.strictEqual(c.etapas[0].dias, 5);
+  assert.strictEqual(c.etapas[0].ajustado, true);
+  assert.strictEqual(c.etapas[0].status, 'CONCLUÍDA');
+  assert.strictEqual(c.etapas[1].inicio, '2024-10-06');
+  assert.strictEqual(c.etapas[1].status, 'ATRASADA'); // terminava 15/10
+  assert.strictEqual(c.etapas[2].status, 'ATRASADA');
+  const somaDias = c.etapas.reduce((s, e) => s + e.dias, 0);
+  perto(c.pct_geral, (5 + 9 * 0.5) / somaDias, 1e-12, '% ponderado');
+  assert.strictEqual(c.situacao, 'EM PRAZO');
+});
+teste('sem data de início: etapas sem data e situação PENDENTE', () => {
+  const c = Cronograma.calcular({ etapas: modelo.cronograma, vars: varsEx, data_inicio: '' });
+  assert.strictEqual(c.situacao, 'PENDENTE');
+  assert.strictEqual(c.etapas[0].status, 'SEM DATA');
+});
+
+console.log('\nParcelas');
+teste('entrada 20%, 10 parcelas a cada 30 dias, centavos na última', () => {
+  const pr = Cronograma.parcelas({ total: 539075.89, adiantamento: 0.2, data_base: '2024-10-01', fim: crono.fim, intervalo: 30, hoje: '2024-12-15', pagamentos: { 0: { pago_em: '2024-10-01' } } });
+  assert.strictEqual(pr.ok, true);
+  assert.strictEqual(pr.entrada, 107815.18);
+  assert.strictEqual(pr.n, 10); // ⌈295/30⌉
+  assert.strictEqual(pr.valor, 43126.07);
+  assert.strictEqual(pr.ultima, 43126.08);
+  perto(pr.lista.reduce((s, p) => s + p.valor, 0), 539075.89, 1e-12, 'soma das parcelas');
+  assert.strictEqual(pr.lista[0].status, 'PAGA');
+  assert.strictEqual(pr.lista[1].vencimento, '2024-10-31');
+  assert.strictEqual(pr.lista[1].status, 'VENCIDA');
+  assert.strictEqual(pr.lista[pr.lista.length - 1].vencimento, '2025-07-23');
+  assert.strictEqual(pr.recebido, 107815.18);
+});
+teste('faltando dados, não inventa parcelas', () => {
+  const pr = Cronograma.parcelas({ total: 1000, adiantamento: null, data_base: '2025-08-01', fim: '2025-07-23', intervalo: 30 });
+  assert.strictEqual(pr.ok, false);
+  assert.ok(pr.faltas.some((f) => f.includes('adiantamento')));
+  const pr2 = Cronograma.parcelas({ total: 1000, adiantamento: 0, data_base: '2025-08-01', fim: '2025-07-23', intervalo: 30 });
+  assert.ok(pr2.faltas.some((f) => f.includes('anterior ao término')));
+});
+teste('adiantamento 0%: sem linha de entrada', () => {
+  const pr = Cronograma.parcelas({ total: 1000, adiantamento: 0, data_base: '2025-01-01', fim: '2025-03-01', intervalo: 30 });
+  assert.strictEqual(pr.lista[0].n, 1);
+  assert.strictEqual(pr.n, 2);
+  assert.strictEqual(pr.valor + pr.ultima, 1000);
+});
+
+console.log('\nContrato');
+function montarContrato(mod, extra) {
+  const p = Object.assign({}, exemplo.parametros, { terraplanagem: 'CONTRATANTE' }, extra || {});
+  const orc = { parametros: p, taxas: { adiantamento: 0.2, administracao: 0.15, protecao: 0.05, intervalo: 30 }, contrato: { modalidade: mod } };
+  const r = Motor.calcular({ modelo, sinapi, orcamento: orc });
+  const v = Motor.variaveis(p);
+  const c = Cronograma.calcular({ etapas: modelo.cronograma, vars: v, data_inicio: p.data_inicio });
+  const pr = Cronograma.parcelas({ total: r.propostas[mod].total, adiantamento: 0.2, data_base: p.data_inicio, fim: c.fim, intervalo: 30 });
+  return Contrato.montar({ modelo, orc, resultado: r, crono: c, parcelas: pr, vars: v });
+}
+const textoDe = (k) => k.secoes.map((s) => s.itens.map((i) => i.texto).join(' ')).join(' ');
+teste('modalidade COM e SEM escolhem as cláusulas certas', () => {
+  const com = textoDe(montarContrato('COM')), sem = textoDe(montarContrato('SEM'));
+  assert.ok(com.includes('O CONSTRUTOR será responsável por toda compra'));
+  assert.ok(!com.includes('O CONTRATANTE será responsável por toda compra'));
+  assert.ok(sem.includes('O CONTRATANTE será responsável por toda compra'));
+  assert.ok(sem.includes('sem reembolso de materiais'));
+});
+teste('terraplanagem decide a cláusula; indefinida vira pendência', () => {
+  assert.ok(textoDe(montarContrato('SEM')).includes('pagas pelo CONTRATANTE'));
+  const k = montarContrato('SEM', { terraplanagem: '' });
+  assert.ok(k.pendencias.some((p) => p.includes('terraplanagem')));
+});
+teste('cláusulas numeradas em sequência, sem buraco', () => {
+  const k = montarContrato('SEM');
+  const nums = [];
+  k.secoes.forEach((s) => s.itens.forEach((i) => { if (i.tipo === 'clausula') nums.push(i.numero); }));
+  assert.deepStrictEqual(nums, nums.map((_, i) => (i + 1) + 'ª'));
+  assert.strictEqual(k.clausulas, 27); // mesma quantidade da planilha
+});
+teste('campos preenchidos: valor, parcelas, prazo e foro', () => {
+  const t = textoDe(montarContrato('SEM'));
+  assert.ok(t.includes('Cliente Exemplo'));
+  assert.ok(t.includes('150,00 m²'));
+  assert.ok(/em 10 parcela\(s\) de R\$ [\d.]+,\d\d/.test(t), 'parcelas');
+  assert.ok(t.includes('295 dias corridos, de 01/10/2024 a 23/07/2025'));
+  assert.ok(t.includes('comarca de Itumbiara'));
+});
+teste('CNPJ de exemplo (XX.XXX) e itens pendentes marcam pendência', () => {
+  const k = montarContrato('COM');
+  assert.ok(k.pendencias.some((p) => p.includes('CNPJ')));
+  assert.ok(k.pendencias.some((p) => p.includes('incompleto')));
+  assert.strictEqual(k.completo, false);
+  assert.ok(textoDe(k).includes('[PENDENTE: CNPJ'));
+});
+teste('escopo automático entra na cláusula de escopo', () => {
+  assert.ok(textoDe(montarContrato('SEM')).includes('Escopo contratado: Obra: Construção de residência térrea com 150,00 m²'));
+});
+
 console.log('\n' + (total - falhas) + '/' + total + ' testes passaram');
 process.exit(falhas ? 1 : 0);

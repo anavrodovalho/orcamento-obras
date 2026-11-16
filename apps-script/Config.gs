@@ -59,12 +59,35 @@ function lerModelo_() {
     .map(function (l) { return texto_(l.texto); })
     .filter(function (t) { return t; });
 
+  var cronograma = lerTabela_(ABA_CFG_CRONOGRAMA).map(function (l) {
+    return {
+      id: texto_(l.id),
+      ordem: numero_(l.ordem) || 0,
+      etapa: texto_(l.etapa),
+      formula_dias: texto_(l.formula_dias).replace(/^=/, ''),
+      ativo: l.ativo === '' ? true : booleano_(l.ativo)
+    };
+  }).filter(function (e) { return e.etapa; }).sort(function (a, b) { return a.ordem - b.ordem; });
+
+  var contrato = lerTabela_(ABA_CFG_CONTRATO).map(function (l) {
+    return {
+      ordem: numero_(l.ordem) || 0,
+      secao: texto_(l.secao),
+      tipo: texto_(l.tipo).toLowerCase() === 'paragrafo' ? 'paragrafo' : 'clausula',
+      condicao: texto_(l.condicao).replace(/^=/, ''),
+      texto: texto_(l.texto),
+      ativo: l.ativo === '' ? true : booleano_(l.ativo)
+    };
+  }).filter(function (c) { return c.texto; }).sort(function (a, b) { return a.ordem - b.ordem; });
+
   return {
     empresa: empresa,
     bdi: bdi,
     itens: itens,
     rateio: rateio,
     categorias_material: categorias,
-    termos: termos
+    termos: termos,
+    cronograma: cronograma,
+    contrato: contrato
   };
 }

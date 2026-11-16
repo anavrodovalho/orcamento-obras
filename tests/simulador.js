@@ -31,6 +31,7 @@ class Range {
   }
   setNumberFormat(f) { for (let j = 0; j < this.nc; j++) this.sheet.formatos[this.c + j] = f; return this; }
   setFontWeight() { return this; }
+  setWrap() { return this; }
   setBackground() { return this; }
   setFontColor() { return this; }
 }

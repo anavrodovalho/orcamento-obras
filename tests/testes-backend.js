@@ -48,6 +48,25 @@ teste('fórmula fica como texto na planilha', () => {
   const linhaFixa = ss.getSheetByName('cfg_itens').rows.find((l) => l[0] === 'I077');
   assert.strictEqual(linhaFixa[col], '1');
 });
+teste('cfg_cronograma e cfg_contrato vêm preenchidos', () => {
+  const padrao = JSON.parse(fs.readFileSync(path.join(raiz, 'data', 'modelo-padrao.json'), 'utf8'));
+  assert.strictEqual(ss.getSheetByName('cfg_cronograma').getLastRow(), 26); // cabeçalho + 25 etapas
+  assert.strictEqual(ss.getSheetByName('cfg_contrato').getLastRow(), padrao.contrato.length + 1);
+});
+teste('atualização: planilha da Fase 1 ganha as abas novas e a chave nova, sem perder o que foi editado', () => {
+  ss.sheets = ss.sheets.filter((a) => a.name !== 'cfg_cronograma' && a.name !== 'cfg_contrato');
+  const emp = ss.getSheetByName('cfg_empresa');
+  emp.rows = emp.rows.filter((l) => l[0] !== 'atividades_construtor_padrao');
+  emp.rows.find((l) => l[0] === 'cnpj')[1] = '12.345.678/0001-90';
+  const antes = emp.rows.length;
+  amb.rodar('setupPlanilha');
+  assert.ok(ss.getSheetByName('cfg_cronograma') && ss.getSheetByName('cfg_contrato'));
+  assert.strictEqual(ss.getSheetByName('cfg_cronograma').getLastRow(), 26);
+  assert.strictEqual(emp.rows.length, antes + 1);
+  assert.strictEqual(emp.rows.find((l) => l[0] === 'cnpj')[1], '12.345.678/0001-90');
+  amb.rodar('setupPlanilha');
+  assert.strictEqual(emp.rows.length, antes + 1, 'rodar de novo não duplica a chave');
+});
 
 console.log('\nUsuários');
 let token;
@@ -68,6 +87,12 @@ teste('getConfig devolve o modelo completo', () => {
   assert.strictEqual(modelo.termos.length, 8);
   assert.ok(modelo.empresa.razao_social.indexOf('HABITAR') === 0);
   assert.strictEqual(typeof modelo.itens[0].codigo, 'string');
+});
+teste('getConfig traz cronograma e contrato iguais ao modelo padrão', () => {
+  const padrao = JSON.parse(fs.readFileSync(path.join(raiz, 'data', 'modelo-padrao.json'), 'utf8'));
+  assert.deepStrictEqual(modelo.cronograma, padrao.cronograma);
+  assert.deepStrictEqual(modelo.contrato, padrao.contrato);
+  assert.ok(modelo.empresa.atividades_construtor_padrao.length > 20);
 });
 teste('o modelo vindo da planilha dá o mesmo resultado golden', () => {
   const r = Motor.calcular({ modelo, sinapi, orcamento: { parametros: exemplo.parametros } });
