@@ -1,0 +1,640 @@
+{
+ "parametros": {
+  "data_orcamento": "2025-03-27",
+  "data_inicio": "2024-10-01",
+  "cliente_cpf": "111.444.777-35",
+  "cliente_nome": "Cliente Exemplo",
+  "endereco_obra": "Rua Exemplo, QD 1 LT 1 - Bairro Modelo",
+  "cidade": "Itumbiara",
+  "terreno": "ACLIVE",
+  "telhado": "EMBUTIDO",
+  "pavimentos": "TÉRREO",
+  "acabamento": "MÉDIO",
+  "pe_direito_duplo": "SALA",
+  "pintura": "NORMAL",
+  "muro": 70,
+  "area": 150,
+  "grama": 44.9109,
+  "piso_ext": 55.0891,
+  "gourmet": null,
+  "piscina": null,
+  "sauna": null,
+  "garagem": null,
+  "gesso": null,
+  "banheiros": 2,
+  "lavabos": 1,
+  "quartos": 3,
+  "cozinhas": 1,
+  "duchas": null,
+  "escadas": null,
+  "portao": "",
+  "portao_largura": null,
+  "portao_altura": null,
+  "registros_sauna": null,
+  "janelas_sauna": null,
+  "registros_gourmet": null,
+  "terraplanagem": ""
+ },
+ "esperado": {
+  "area_equivalente": 170.254455,
+  "subtotal_valido": 456454.024954801,
+  "mao_de_obra": 173378.73866024375,
+  "itens": {
+   "I009": {
+    "qtd": 4630.921176000001,
+    "total": 109660.21344768001,
+    "status": "OK"
+   },
+   "I010": {
+    "qtd": 2732.24349384,
+    "total": 41694.035715998405,
+    "status": "OK"
+   },
+   "I011": {
+    "qtd": 204.305346,
+    "total": 4837.950593279999,
+    "status": "OK"
+   },
+   "I012": {
+    "qtd": 165.998093625,
+    "total": 3930.83485704,
+    "status": "OK"
+   },
+   "I013": {
+    "qtd": 464.79466215,
+    "total": 11006.337599712,
+    "status": "OK"
+   },
+   "I014": {
+    "qtd": 14.764466337600002,
+    "total": 2249.36644653336,
+    "status": "OK"
+   },
+   "I020": {
+    "qtd": 170.254455,
+    "total": 5579.238490350001,
+    "status": "OK"
+   },
+   "I021": {
+    "qtd": 170.254455,
+    "total": 10479.16170525,
+    "status": "OK"
+   },
+   "I027": {
+    "qtd": 204.30534600000001,
+    "total": 5226.13075068,
+    "status": "OK"
+   },
+   "I030": {
+    "qtd": 57.886514700000006,
+    "total": 1736.5954410000002,
+    "status": "OK"
+   },
+   "I031": {
+    "qtd": 74.91196020000001,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I032": {
+    "qtd": 6.8101782,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I035": {
+    "qtd": 199.19771235,
+    "total": 43823.496716999995,
+    "status": "OK"
+   },
+   "I036": {
+    "qtd": 37.455980100000005,
+    "total": 5631.132048234001,
+    "status": "OK"
+   },
+   "I037": {
+    "qtd": 2043.05346,
+    "total": 2860.274844,
+    "status": "OK"
+   },
+   "I038": {
+    "qtd": 32232.5734206,
+    "total": 26430.710204892,
+    "status": "OK"
+   },
+   "I039": {
+    "qtd": 12467.73373965,
+    "total": 27553.6915646265,
+    "status": "OK"
+   },
+   "I040": {
+    "qtd": 3621.9932756700005,
+    "total": 15538.351152624302,
+    "status": "OK"
+   },
+   "I041": {
+    "qtd": 60.27007707,
+    "total": 1292.1904523808,
+    "status": "OK"
+   },
+   "I044": {
+    "qtd": null,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I045": {
+    "qtd": null,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I048": {
+    "qtd": 137.735854095,
+    "total": 932.47173222315,
+    "status": "OK"
+   },
+   "I049": {
+    "qtd": 2553.12729445725,
+    "total": 14246.450303071457,
+    "status": "OK"
+   },
+   "I050": {
+    "qtd": 595.8905925,
+    "total": 3819.658697925,
+    "status": "OK"
+   },
+   "I051": {
+    "qtd": 80.189848305,
+    "total": 1731.29882490495,
+    "status": "OK"
+   },
+   "I052": {
+    "qtd": 187.27990050000002,
+    "total": 2028.2413224150002,
+    "status": "OK"
+   },
+   "I053": {
+    "qtd": 58.56753252,
+    "total": 1062.4150399128,
+    "status": "OK"
+   },
+   "I059": {
+    "qtd": 131.09593035,
+    "total": 7684.843437117,
+    "status": "OK"
+   },
+   "I060": {
+    "qtd": 12.632880561,
+    "total": 9158.33309150256,
+    "status": "OK"
+   },
+   "I063": {
+    "qtd": 488.63028585000006,
+    "total": 7769.2215450150015,
+    "status": "OK"
+   },
+   "I064": {
+    "qtd": 459.68702850000005,
+    "total": 2266.2570505050003,
+    "status": "OK"
+   },
+   "I065": {
+    "qtd": 272.407128,
+    "total": 1323.8986420800002,
+    "status": "OK"
+   },
+   "I066": {
+    "qtd": 25.538168250000002,
+    "total": 517.1479070625,
+    "status": "OK"
+   },
+   "I067": {
+    "qtd": 207.7104351,
+    "total": 3840.565944999,
+    "status": "OK"
+   },
+   "I068": {
+    "qtd": 29.96478408,
+    "total": 250.5055949088,
+    "status": "OK"
+   },
+   "I071": {
+    "qtd": 232.56758553000003,
+    "total": 7249.131640970101,
+    "status": "OK"
+   },
+   "I072": {
+    "qtd": 68.101782,
+    "total": 221.3307915,
+    "status": "OK"
+   },
+   "I073": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I074": {
+    "qtd": 51.076336500000004,
+    "total": 290.624354685,
+    "status": "OK"
+   },
+   "I075": {
+    "qtd": 34.050891,
+    "total": 1975.9732047300001,
+    "status": "OK"
+   },
+   "I076": {
+    "qtd": 246.86895975000002,
+    "total": 3816.5941177350005,
+    "status": "OK"
+   },
+   "I077": {
+    "qtd": 1,
+    "total": 5.48,
+    "status": "OK"
+   },
+   "I080": {
+    "qtd": 817.2213840000001,
+    "total": 1667.13162336,
+    "status": "OK"
+   },
+   "I081": {
+    "qtd": 738.9043347,
+    "total": 2438.38430451,
+    "status": "OK"
+   },
+   "I082": {
+    "qtd": 255.3816825,
+    "total": 1330.538565825,
+    "status": "OK"
+   },
+   "I083": {
+    "qtd": 83.42468295,
+    "total": 628.1878626135001,
+    "status": "OK"
+   },
+   "I084": {
+    "qtd": 62.99414835,
+    "total": 1211.3774727705002,
+    "status": "OK"
+   },
+   "I085": {
+    "qtd": 4.086106920000001,
+    "total": 92.1825721152,
+    "status": "OK"
+   },
+   "I086": {
+    "qtd": 51.076336500000004,
+    "total": 932.143141125,
+    "status": "OK"
+   },
+   "I087": {
+    "qtd": 37.455980100000005,
+    "total": 762.6037548360001,
+    "status": "OK"
+   },
+   "I088": {
+    "qtd": 13.6203564,
+    "total": 216.69987032400002,
+    "status": "OK"
+   },
+   "I089": {
+    "qtd": 6.46966929,
+    "total": 134.05154768879999,
+    "status": "OK"
+   },
+   "I090": {
+    "qtd": 192.38753415,
+    "total": 390.5466943244999,
+    "status": "OK"
+   },
+   "I091": {
+    "qtd": 15.32290095,
+    "total": 30.339343880999998,
+    "status": "OK"
+   },
+   "I092": {
+    "qtd": 34.050891,
+    "total": 57.546005789999995,
+    "status": "OK"
+   },
+   "I093": {
+    "qtd": 10.2152673,
+    "total": 34.425450801000004,
+    "status": "OK"
+   },
+   "I094": {
+    "qtd": 1,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I095": {
+    "qtd": 2,
+    "total": 13.22,
+    "status": "OK"
+   },
+   "I096": {
+    "qtd": 1,
+    "total": 63.13,
+    "status": "OK"
+   },
+   "I097": {
+    "qtd": 1,
+    "total": 59.41,
+    "status": "OK"
+   },
+   "I098": {
+    "qtd": 1,
+    "total": 260.29,
+    "status": "OK"
+   },
+   "I101": {
+    "qtd": 167.18987481,
+    "total": 2221.9534362248996,
+    "status": "OK"
+   },
+   "I102": {
+    "qtd": 92.95893243,
+    "total": 2581.4695535811,
+    "status": "OK"
+   },
+   "I103": {
+    "qtd": 44.2661583,
+    "total": 2165.943125619,
+    "status": "OK"
+   },
+   "I104": {
+    "qtd": 3,
+    "total": 41.31,
+    "status": "OK"
+   },
+   "I105": {
+    "qtd": 76.61450475000001,
+    "total": 1863.2647555200003,
+    "status": "OK"
+   },
+   "I106": {
+    "qtd": 30.305292989999998,
+    "total": 23.335075602299998,
+    "status": "OK"
+   },
+   "I107": {
+    "qtd": 17.4170307465,
+    "total": 16.546179209174998,
+    "status": "OK"
+   },
+   "I108": {
+    "qtd": 13.6203564,
+    "total": 76.001588712,
+    "status": "OK"
+   },
+   "I109": {
+    "qtd": 6.8101782,
+    "total": 32.68885536,
+    "status": "OK"
+   },
+   "I110": {
+    "qtd": 4,
+    "total": 352,
+    "status": "OK"
+   },
+   "I111": {
+    "qtd": 2,
+    "total": 166,
+    "status": "OK"
+   },
+   "I112": {
+    "qtd": 5,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I113": {
+    "qtd": 5,
+    "total": 63.949999999999996,
+    "status": "OK"
+   },
+   "I114": {
+    "qtd": 3,
+    "total": 1255.53,
+    "status": "OK"
+   },
+   "I115": {
+    "qtd": 1,
+    "total": 485,
+    "status": "OK"
+   },
+   "I116": {
+    "qtd": 1,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I117": {
+    "qtd": 3,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I118": {
+    "qtd": 1,
+    "total": 472.77,
+    "status": "OK"
+   },
+   "I119": {
+    "qtd": 2,
+    "total": 15.32,
+    "status": "OK"
+   },
+   "I120": {
+    "qtd": 1,
+    "total": 88.01,
+    "status": "OK"
+   },
+   "I121": {
+    "qtd": 1,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I122": {
+    "qtd": 5,
+    "total": 75.1,
+    "status": "OK"
+   },
+   "I125": {
+    "qtd": 1306.992619,
+    "total": 2065.0483380200003,
+    "status": "OK"
+   },
+   "I126": {
+    "qtd": 74.36337315,
+    "total": 371.0732320185,
+    "status": "OK"
+   },
+   "I127": {
+    "qtd": 3,
+    "total": 465.39,
+    "status": "OK"
+   },
+   "I128": {
+    "qtd": 1,
+    "total": 137.44,
+    "status": "OK"
+   },
+   "I129": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I130": {
+    "qtd": 3,
+    "total": 240.66,
+    "status": "OK"
+   },
+   "I131": {
+    "qtd": 4,
+    "total": 154.44,
+    "status": "OK"
+   },
+   "I132": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I133": {
+    "qtd": 9.8,
+    "total": 5648.2300000000005,
+    "status": "OK"
+   },
+   "I134": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I135": {
+    "qtd": 1,
+    "total": 177.08,
+    "status": "OK"
+   },
+   "I136": {
+    "qtd": 0,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I137": {
+    "qtd": 259.14508825,
+    "total": 6903.62515098,
+    "status": "OK"
+   },
+   "I138": {
+    "qtd": 0,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I139": {
+    "qtd": 91.93740570000001,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I140": {
+    "qtd": 0,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I141": {
+    "qtd": 12,
+    "total": 670.8,
+    "status": "OK"
+   },
+   "I142": {
+    "qtd": 14.471628675000002,
+    "total": 1232.1144653895,
+    "status": "OK"
+   },
+   "I143": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I144": {
+    "qtd": 204.30534600000001,
+    "total": 2888.87759244,
+    "status": "OK"
+   },
+   "I145": {
+    "qtd": 9,
+    "total": 5945.22,
+    "status": "OK"
+   },
+   "I146": {
+    "qtd": 94.31289,
+    "total": 1292.0865929999998,
+    "status": "OK"
+   },
+   "I147": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I148": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I149": {
+    "qtd": 4,
+    "total": 2235.16,
+    "status": "OK"
+   },
+   "I150": {
+    "qtd": 0,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I151": {
+    "qtd": 3,
+    "total": 671.55,
+    "status": "OK"
+   },
+   "I152": {
+    "qtd": null,
+    "total": null,
+    "status": "PENDENTE: código/preço/unidade/quantidade"
+   },
+   "I155": {
+    "qtd": 1481.2137585,
+    "total": 4325.14417482,
+    "status": "OK"
+   },
+   "I156": {
+    "qtd": 153.22900950000002,
+    "total": 1490.9182624350003,
+    "status": "OK"
+   },
+   "I157": {
+    "qtd": 20.4305346,
+    "total": 60.270077070000006,
+    "status": "OK"
+   },
+   "I158": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I159": {
+    "qtd": 151.52646495000002,
+    "total": 3741.1884196155006,
+    "status": "OK"
+   },
+   "I160": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I161": {
+    "qtd": 0,
+    "total": 0,
+    "status": "OK"
+   },
+   "I162": {
+    "qtd": 149.82392040000002,
+    "total": 3699.1525946760007,
+    "status": "OK"
+   }
+  }
+ }
+}
