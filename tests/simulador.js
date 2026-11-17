@@ -124,7 +124,7 @@ function criarAmbiente(opcoes = {}) {
   };
   vm.createContext(sandbox);
   const dir = path.join(__dirname, '..', 'apps-script');
-  ['Code.gs', 'Auth.gs', 'Db.gs', 'Config.gs', 'Orcamentos.gs', 'Setup.gs', 'Seed.gs'].forEach((f) => {
+  ['Code.gs', 'Auth.gs', 'Db.gs', 'Config.gs', 'Orcamentos.gs', 'Gastos.gs', 'Setup.gs', 'Seed.gs'].forEach((f) => {
     vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8'), sandbox, { filename: f });
   });
   return {

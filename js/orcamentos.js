@@ -102,7 +102,7 @@ const listaOrcamentos = {
     }
     el('lista-tabela').innerHTML = `
       <table class="tabela tabela-responsiva tabela-clicavel">
-        <thead><tr><th>Cliente</th><th>Data</th><th class="num">Área</th><th>Acabamento</th><th class="num">Com material</th><th class="num">Sem material</th><th>Situação</th></tr></thead>
+        <thead><tr><th>Cliente</th><th>Data</th><th class="num">Área</th><th>Acabamento</th><th class="num">Com material</th><th class="num">Sem material</th><th class="num">Gasto</th><th>Situação</th></tr></thead>
         <tbody>${filtrada.map((o) => `
           <tr data-id="${esc(o.id)}" tabindex="0">
             <td class="principal-cel"><strong>${esc(o.cliente_nome)}</strong><small>${esc(o.id)} · ${esc(o.cidade || o.endereco_obra || '')}</small></td>
@@ -111,8 +111,9 @@ const listaOrcamentos = {
             <td data-rotulo="Acabamento">${esc(o.acabamento || '—')}</td>
             <td class="num" data-rotulo="Com material">${moeda(o.total_com_material)}</td>
             <td class="num" data-rotulo="Sem material">${moeda(o.total_sem_material)}</td>
+            <td class="num" data-rotulo="Gasto">${o.total_gasto ? moeda(o.total_gasto) : '—'}</td>
             <td data-rotulo="Situação">${pilula(CLASSE_STATUS[o.status] || 'st-neutro', o.status)}${o.pendencias ? ' ' + pilula('st-breve', o.pendencias + ' pend.') : ''}</td>
-          </tr>`).join('') || '<tr><td colspan="7" class="vazio">Nada encontrado com esse filtro.</td></tr>'}
+          </tr>`).join('') || '<tr><td colspan="8" class="vazio">Nada encontrado com esse filtro.</td></tr>'}
         </tbody>
       </table>`;
     qa('#lista-tabela tr[data-id]').forEach((tr) => {
@@ -175,6 +176,7 @@ const editor = {
       this.orc.status = o.status;
       completarFase2(this.orc);
     }
+    await this.carregarGastos();
     this.aba = 'dados';
     this.calcular();
     this.renderizar();
@@ -185,6 +187,7 @@ const editor = {
       modelo: dados.modelo, sinapi: dados.sinapi, indiceSinapi: dados.indiceSinapi, orcamento: this.orc, hoje: hojeIso(),
     });
     this.fase2 = calcularFase2(this.orc, this.resultado);
+    this.fase3 = calcularFase3(this.orc, this.resultado, this.fase2, this.gastos);
     return this.resultado;
   },
 
@@ -212,7 +215,7 @@ const editor = {
       </div>
       <div class="ed-resumo" id="ed-resumo"></div>
       <nav class="abas" role="tablist">
-        ${[['dados', 'Dados da obra'], ['itens', 'Itens'], ['resumo', 'Resumo e propostas'], ['cronograma', 'Cronograma'], ['pagamento', 'Pagamento'], ['contrato', 'Contrato'], ['validacao', 'Validação']]
+        ${[['dados', 'Dados da obra'], ['itens', 'Itens'], ['resumo', 'Resumo e propostas'], ['cronograma', 'Cronograma'], ['pagamento', 'Pagamento'], ['contrato', 'Contrato'], ['gastos', 'Gastos'], ['validacao', 'Validação']]
           .map(([k, r]) => `<button type="button" role="tab" class="aba${this.aba === k ? ' ativa' : ''}" data-aba="${k}">${r}<span class="aba-contador" id="aba-cont-${k}"></span></button>`).join('')}
       </nav>
       <div id="ed-conteudo"></div>`;
@@ -246,6 +249,7 @@ const editor = {
     el('aba-cont-cronograma').textContent = f2.crono.atrasadas ? String(f2.crono.atrasadas) : '';
     el('aba-cont-pagamento').textContent = f2.parcelas.vencidas ? String(f2.parcelas.vencidas) : '';
     el('aba-cont-contrato').textContent = f2.contrato.pendencias.length ? String(f2.contrato.pendencias.length) : '';
+    el('aba-cont-gastos').textContent = this.fase3.acima ? String(this.fase3.acima) : '';
     const nome = el('ed-nome');
     if (nome) nome.textContent = this.orc.parametros.cliente_nome || 'Novo orçamento';
   },
@@ -258,6 +262,7 @@ const editor = {
     else if (this.aba === 'cronograma') this.abaCronograma(alvo);
     else if (this.aba === 'pagamento') this.abaPagamento(alvo);
     else if (this.aba === 'contrato') this.abaContrato(alvo);
+    else if (this.aba === 'gastos') this.abaGastos(alvo);
     else this.abaValidacao(alvo);
   },
 
@@ -632,6 +637,7 @@ const editor = {
     history.replaceState(null, '', '#/orcamentos/novo');
     app.rotaAtual = 'orcamento';
     this.id = null; this.versao = null; this.rotaParametro = 'novo'; this.salvoCom = '';
+    this.gastos = []; this.gastosErro = ''; this.gastoEdicao = null; // os gastos ficam no original
     this.orc = copia;
     this.calcular();
     this.renderizar();

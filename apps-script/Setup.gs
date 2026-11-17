@@ -56,7 +56,7 @@ function setupPlanilha() {
   var modelo = modeloPadrao_();
   var criadas = [];
 
-  [ABA_ORCAMENTOS, ABA_ORC_ITENS, ABA_USUARIOS, ABA_LOG,
+  [ABA_ORCAMENTOS, ABA_ORC_ITENS, ABA_USUARIOS, ABA_LOG, ABA_GASTOS,
     ABA_CFG_EMPRESA, ABA_CFG_BDI, ABA_CFG_ITENS, ABA_CFG_RATEIO, ABA_CFG_CATEGORIAS, ABA_CFG_TERMOS, ABA_CFG_CRONOGRAMA, ABA_CFG_CONTRATO]
     .forEach(function (nome) {
       if (!ss.getSheetByName(nome)) { criarAba_(ss, nome); criadas.push(nome); }

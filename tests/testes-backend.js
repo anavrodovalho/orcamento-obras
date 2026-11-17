@@ -164,6 +164,69 @@ teste('excluir esconde da lista', () => {
   assert.strictEqual(ok(amb.chamar('listOrcamentos', {}, token)).length, 1);
   erro(amb.chamar('getOrcamento', { id: 'ORC0002' }, token), 'não encontrado');
 });
+
+console.log('\nGastos');
+let gastoId;
+teste('setupPlanilha cria db_gastos com data como texto', () => {
+  const aba = ss.getSheetByName('db_gastos');
+  assert.ok(aba, 'falta db_gastos');
+  const cab = aba.rows[0];
+  assert.strictEqual(cab[0], 'id');
+  assert.strictEqual(aba.formatos[cab.indexOf('data') + 1], '@');
+});
+teste('lançar gasto calcula o total e gera G00001', () => {
+  const g = ok(amb.chamar('saveGasto', { gasto: { orcamento_id: id, data: '2024-10-05', grupo: 'MÃO-DE-OBRA', descricao: 'Pedreiro semana 1', qtd: '44', valor_unitario: '23,68', unidade: 'H' } }, token));
+  gastoId = g.id;
+  assert.strictEqual(g.id, 'G00001');
+  assert.strictEqual(g.total, 1041.92);
+  const linha = ss.getSheetByName('db_gastos').rows[1];
+  assert.strictEqual(linha[2], '2024-10-05'); // data continua texto
+});
+teste('quantidade vazia vale 1', () => {
+  const g = ok(amb.chamar('saveGasto', { gasto: { orcamento_id: id, data: '2024-11-02', grupo: 'ELÉTRICA', descricao: 'Fios e cabos', valor_unitario: 850.5 } }, token));
+  assert.strictEqual(g.qtd, 1);
+  assert.strictEqual(g.total, 850.5);
+});
+teste('listar gastos do orçamento em ordem de data', () => {
+  const l = ok(amb.chamar('listGastos', { orcamento_id: id }, token));
+  assert.deepStrictEqual(l.map((g) => g.id), ['G00001', 'G00002']);
+  assert.ok(!('_linha' in l[0]));
+  assert.strictEqual(ok(amb.chamar('listGastos', { orcamento_id: 'ORC9999' }, token)).length, 0);
+});
+teste('editar gasto troca valores sem duplicar', () => {
+  ok(amb.chamar('saveGasto', { gasto: { id: gastoId, orcamento_id: id, data: '2024-10-05', grupo: 'MÃO-DE-OBRA', descricao: 'Pedreiro semana 1', qtd: 40, valor_unitario: 25 } }, token));
+  const l = ok(amb.chamar('listGastos', { orcamento_id: id }, token));
+  assert.strictEqual(l.length, 2);
+  assert.strictEqual(l[0].total, 1000);
+});
+teste('lista de orçamentos traz o total gasto', () => {
+  const lista = ok(amb.chamar('listOrcamentos', {}, token));
+  assert.strictEqual(lista[0].total_gasto, 1850.5);
+});
+teste('validações do gasto', () => {
+  const base = { orcamento_id: id, data: '2024-10-05', grupo: 'LAJE', descricao: 'x', valor_unitario: 10 };
+  erro(amb.chamar('saveGasto', { gasto: Object.assign({}, base, { orcamento_id: 'ORC0002' }) }, token), 'Orçamento não encontrado');
+  erro(amb.chamar('saveGasto', { gasto: Object.assign({}, base, { data: '' }) }, token), 'data');
+  erro(amb.chamar('saveGasto', { gasto: Object.assign({}, base, { grupo: '' }) }, token), 'grupo');
+  erro(amb.chamar('saveGasto', { gasto: Object.assign({}, base, { valor_unitario: '' }) }, token), 'valor unitário');
+  erro(amb.chamar('saveGasto', { gasto: Object.assign({}, base, { qtd: 0 }) }, token), 'quantidade');
+  erro(amb.chamar('saveGasto', { gasto: Object.assign({}, base, { id: 'G09999' }) }, token), 'não encontrado');
+});
+teste('excluir gasto tira da lista e do total', () => {
+  ok(amb.chamar('deleteGasto', { id: 'G00002' }, token));
+  assert.strictEqual(ok(amb.chamar('listGastos', { orcamento_id: id }, token)).length, 1);
+  assert.strictEqual(ok(amb.chamar('listOrcamentos', {}, token))[0].total_gasto, 1000);
+  erro(amb.chamar('deleteGasto', { id: 'G00002' }, token), 'não encontrado');
+});
+teste('planilha da Fase 2 sem db_gastos: lista funciona e setup cria a aba', () => {
+  const guardada = ss.getSheetByName('db_gastos');
+  ss.sheets = ss.sheets.filter((a) => a.name !== 'db_gastos');
+  assert.strictEqual(ok(amb.chamar('listOrcamentos', {}, token))[0].total_gasto, 0);
+  amb.rodar('setupPlanilha');
+  assert.ok(ss.getSheetByName('db_gastos'));
+  ss.sheets = ss.sheets.filter((a) => a.name !== 'db_gastos');
+  ss.sheets.push(guardada);
+});
 teste('log registra as ações', () => {
   const log = ok(amb.chamar('listLog', {}, token));
   assert.ok(log.some((l) => l.acao === 'criar' && l.registro_id === 'ORC0001'));

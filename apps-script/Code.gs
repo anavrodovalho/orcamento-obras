@@ -10,7 +10,8 @@
  *  - A base SINAPI NÃO fica aqui: está no GitHub (data/sinapi/GO-AAAA-MM.json).
  *
  * Arquivos: Code.gs (roteamento) · Auth.gs (login) · Db.gs (leitura/escrita)
- *           Config.gs (modelo cfg_*) · Orcamentos.gs · Setup.gs (instalação) · Seed.gs (modelo padrão)
+ *           Config.gs (modelo cfg_*) · Orcamentos.gs · Gastos.gs (gastos da obra)
+ *           Setup.gs (instalação) · Seed.gs (modelo padrão)
  */
 
 // Deixe vazio quando o script estiver vinculado à planilha (Extensões → Apps Script).
@@ -22,6 +23,7 @@ var ABA_ORCAMENTOS = 'db_orcamentos';
 var ABA_ORC_ITENS = 'db_orcamento_itens';
 var ABA_USUARIOS = 'db_usuarios';
 var ABA_LOG = 'db_log';
+var ABA_GASTOS = 'db_gastos';
 
 var ABA_CFG_EMPRESA = 'cfg_empresa';
 var ABA_CFG_BDI = 'cfg_bdi';
@@ -49,6 +51,9 @@ function acoes_() {
     getOrcamento:     { fn: acaoGetOrcamento },
     saveOrcamento:    { fn: acaoSaveOrcamento, escrita: true },
     deleteOrcamento:  { fn: acaoDeleteOrcamento, escrita: true },
+    listGastos:       { fn: acaoListGastos },
+    saveGasto:        { fn: acaoSaveGasto, escrita: true },
+    deleteGasto:      { fn: acaoDeleteGasto, escrita: true },
     listLog:          { fn: acaoListLog }
   };
 }

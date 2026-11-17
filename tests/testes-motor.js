@@ -259,5 +259,78 @@ teste('escopo automático entra na cláusula de escopo', () => {
   assert.ok(textoDe(montarContrato('SEM')).includes('Escopo contratado: Obra: Construção de residência térrea com 150,00 m²'));
 });
 
+console.log('\nGastos × orçado');
+const Gastos = require('../js/gastos.js');
+// Coluna "Orçamento" do DASHBOARD da planilha original (D50:D64), mesma obra de exemplo.
+const DASHBOARD_ORCADO = {
+  'ACABAMENTO E FINALIZAÇÃO': 31098.795371848, 'ALUGUÉIS': 1736.5954410000002, 'ALVENARIA E GESSO': 123129.8469837576,
+  'ELÉTRICA': 10322.2082099645, FERRAGEM: 23820.535920452356, 'HIDRÁULICA': 11996.19256982848,
+  'IMPOSTOS/ TAXAS': 16058.400195600001, LAJE: 16843.17652861956, MADEIRA: 15967.5966845703,
+  'MÃO-DE-OBRA': 173378.73866024375, 'PINTURA E MASSA': 13316.673528616502, PROJETO: 5226.13075068,
+  TELHADO: 13559.1341096201, TERRAPLANAGEM: 0,
+};
+const rGolden = Motor.calcular({ modelo, sinapi, orcamento: { parametros: exemplo.parametros } });
+teste('golden: orçado por grupo = coluna Orçamento do DASHBOARD', () => {
+  Object.keys(DASHBOARD_ORCADO).forEach((g) => perto(rGolden.grupos[g] || 0, DASHBOARD_ORCADO[g], 1e-9, g));
+});
+const lancamentos = [
+  { data: '2024-10-05', grupo: 'MÃO-DE-OBRA', total: 1000 },
+  { data: '2024-10-20', grupo: 'PROJETO', total: 5300 },          // passa do orçado (5.226,13)
+  { data: '2024-12-01', grupo: 'MÃO-DE-OBRA', total: 2500.255 },
+  { data: '2024-12-03', grupo: 'OUTROS', total: 99.9 },           // grupo sem orçamento
+  { data: 'lixo', grupo: 'LAJE', total: 10 },                     // ignorado
+];
+const resumoG = Gastos.resumo({
+  gastos: lancamentos, orcado: rGolden.grupos, total_contrato: 539075.89,
+  data_inicio: '2024-10-01', fim: '2025-07-23', pct_fisico: 0.02,
+  parcelas: [{ valor: 107815.18, pago_em: '2024-10-01' }, { valor: 43126.07, pago_em: '' }, { valor: 43126.07, pago_em: '2024-11-30' }],
+});
+teste('totais: gasto, saldo do contrato, disponível e recebido', () => {
+  assert.strictEqual(resumoG.lancamentos, 4);
+  assert.strictEqual(resumoG.total_gasto, 8900.16);
+  assert.strictEqual(resumoG.saldo_contrato, 530175.73);
+  assert.strictEqual(resumoG.disponivel, 530175.73);
+  assert.strictEqual(resumoG.recebido, 150941.25);
+  assert.strictEqual(resumoG.caixa, 142041.09);
+  perto(resumoG.custo_orcado, 456454.02, 1e-9, 'custo orçado = subtotal da planilha');
+});
+teste('grupo acima do orçado e grupo sem orçamento', () => {
+  const g = (n) => resumoG.grupos.find((x) => x.grupo === n);
+  assert.strictEqual(g('PROJETO').status, 'ACIMA');
+  assert.strictEqual(g('OUTROS').status, 'SEM ORÇAMENTO');
+  assert.strictEqual(g('MÃO-DE-OBRA').status, 'OK');
+  assert.strictEqual(g('MÃO-DE-OBRA').gasto, 3500.26);
+  assert.strictEqual(resumoG.acima, 2);
+  assert.ok(!g('TERRAPLANAGEM'), 'grupo com orçado zero e sem gasto não aparece');
+  const nomes = resumoG.grupos.map((x) => x.grupo);
+  assert.deepStrictEqual(nomes, nomes.slice().sort((a, b) => a.localeCompare(b, 'pt-BR')));
+});
+teste('meses do início ao término, com gasto, recebido e caixa acumulado', () => {
+  const m = resumoG.meses;
+  assert.strictEqual(m[0].mes, '2024-10');
+  assert.strictEqual(m[m.length - 1].mes, '2025-07');
+  assert.strictEqual(m.length, 10);
+  assert.deepStrictEqual([m[0].gasto, m[0].recebido], [6300, 107815.18]);
+  assert.deepStrictEqual([m[1].gasto, m[1].recebido], [0, 43126.07]);
+  assert.strictEqual(m[2].gasto, 2600.16);
+  assert.strictEqual(m[m.length - 1].caixa, resumoG.caixa);
+});
+teste('% gasto do custo × % físico', () => {
+  perto(resumoG.pct_gasto, 8900.16 / 456454.02, 1e-6, 'pct gasto');
+  perto(resumoG.desvio, 8900.16 / 456454.02 - 0.02, 1e-6, 'desvio');
+});
+teste('sem contrato nem datas não quebra', () => {
+  const v = Gastos.resumo({ gastos: [], orcado: {} });
+  assert.strictEqual(v.total_gasto, 0);
+  assert.strictEqual(v.saldo_contrato, null);
+  assert.deepStrictEqual(v.meses, []);
+  assert.strictEqual(v.pct_gasto, null);
+});
+teste('estouro do contrato: saldo negativo, disponível zero', () => {
+  const v = Gastos.resumo({ gastos: [{ data: '2025-01-01', grupo: 'LAJE', total: 1200 }], orcado: { LAJE: 1000 }, total_contrato: 1000 });
+  assert.strictEqual(v.saldo_contrato, -200);
+  assert.strictEqual(v.disponivel, 0);
+});
+
 console.log('\n' + (total - falhas) + '/' + total + ' testes passaram');
 process.exit(falhas ? 1 : 0);

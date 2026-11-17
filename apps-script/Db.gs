@@ -17,6 +17,10 @@ function cabecalhos_(nome) {
     ];
     case ABA_USUARIOS: return ['usuario', 'nome', 'senha_hash', 'perfil', 'ativo'];
     case ABA_LOG: return ['data_hora', 'usuario', 'acao', 'entidade', 'registro_id', 'resumo_alteracao'];
+    case ABA_GASTOS: return [
+      'id', 'orcamento_id', 'data', 'grupo', 'descricao', 'fornecedor', 'qtd', 'unidade',
+      'valor_unitario', 'total', 'observacao', 'ativo', 'criado_em', 'criado_por', 'atualizado_em', 'atualizado_por'
+    ];
     case ABA_CFG_EMPRESA: return ['chave', 'valor', 'descricao'];
     case ABA_CFG_BDI: return ['chave', 'valor', 'descricao'];
     case ABA_CFG_ITENS: return [
@@ -39,6 +43,7 @@ function colunasTexto_(nome) {
     case ABA_ORC_ITENS: return ['orcamento_id', 'item_id', 'codigo'];
     case ABA_USUARIOS: return ['usuario', 'senha_hash'];
     case ABA_LOG: return ['data_hora', 'registro_id'];
+    case ABA_GASTOS: return ['id', 'orcamento_id', 'data', 'criado_em', 'atualizado_em'];
     case ABA_CFG_ITENS: return ['id', 'formula_qtd'];
     case ABA_CFG_TERMOS: return ['texto'];
     case ABA_CFG_CRONOGRAMA: return ['id', 'formula_dias'];

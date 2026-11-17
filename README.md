@@ -6,7 +6,7 @@ Sistema que substitui a planilha **"Orçamento de Obras SINAPI"**. Ele calcula a
 |---|---|---|
 | Site (HTML/JS) | GitHub Pages | Telas, cálculo completo no navegador e proposta em PDF |
 | Base SINAPI GO | `data/sinapi/*.json` (no próprio repositório) | ~5 mil insumos com preço de Goiás, um arquivo por mês |
-| Banco de dados | Planilha Google (abas `db_*`) | Orçamentos salvos, usuários e log |
+| Banco de dados | Planilha Google (abas `db_*`) | Orçamentos salvos, gastos da obra, usuários e log |
 | Modelo editável | Planilha Google (abas `cfg_*`) | Itens, fatores, fórmulas, preços manuais, rateio, termos, empresa e BDI |
 | API | Apps Script (Aplicativo da Web) | Login, leitura do modelo, salvar e listar orçamentos |
 
@@ -16,7 +16,7 @@ Nenhum dado de cliente fica no GitHub. Esses dados ficam só na planilha.
 
 1. **Planilha**: crie uma planilha Google vazia, por exemplo "Orçamento de Obras — Sistema".
 2. **Apps Script**: na planilha, abra *Extensões → Apps Script*.
-   - Crie os arquivos `Code`, `Auth`, `Db`, `Config`, `Orcamentos`, `Setup` e `Seed`.
+   - Crie os arquivos `Code`, `Auth`, `Db`, `Config`, `Orcamentos`, `Gastos`, `Setup` e `Seed`.
    - Cole em cada um o conteúdo do arquivo de mesmo nome da pasta `apps-script/`.
    - Em *Configurações do projeto*, marque "Mostrar appsscript.json" e cole o `appsscript.json`.
 3. **Preparar as abas**: no editor, escolha a função `setupPlanilha` e clique em *Executar*. Autorize o acesso quando for pedido.
@@ -53,6 +53,14 @@ Para atualizar o Apps Script depois, use *Implantar → Gerenciar implantações
 - **Contrato**: minuta com as cláusulas da aba `cfg_contrato`, já preenchidas com os dados do orçamento.
   - Traz o Anexo I (parcelas) e o Anexo II (cronograma físico).
   - Enquanto faltar algum dado, sai com a marca **MINUTA** e a lista de pendências no topo.
+- **Gastos**: só aparece depois que o orçamento é salvo.
+  - Cada gasto tem data, grupo, descrição, fornecedor, quantidade, unidade e valor unitário. O total = quantidade × valor unitário.
+  - O gasto é gravado na hora, na aba `db_gastos`, sem precisar salvar o orçamento. Excluir só marca como inativo.
+  - **Gasto × orçado por grupo**: o orçado é o custo do grupo na lista de itens, como no DASHBOARD da planilha. Grupo que passa do orçado fica como **ACIMA**.
+  - **Cards**: contrato, total gasto (% do custo × % físico do cronograma), saldo do contrato (contrato − gasto) e caixa da obra (recebido − gasto).
+  - **Mês a mês**: gasto, recebido (parcelas pagas) e caixa acumulado, com gráfico.
+  - **Relatório da obra**: folha A4 com resumo financeiro, grupos, meses, etapas e parcelas.
+  - A lista de orçamentos mostra o total gasto de cada obra.
 
 ## Editar o modelo (fatores, fórmulas, preços)
 
@@ -103,8 +111,8 @@ python -I tools/atualizar_sinapi.py "C:/caminho/arquivo-novo.xlsx" --competencia
 ## Desenvolvimento
 
 ```
-node tests/testes-motor.js      # 39 testes: orçamento item a item e cronograma comparados com a planilha, parcelas e contrato
-node tests/testes-backend.js    # 18 testes do Apps Script num simulador
+node tests/testes-motor.js      # 46 testes: orçamento item a item, cronograma e orçado por grupo comparados com a planilha, parcelas, contrato e gastos
+node tests/testes-backend.js    # 27 testes do Apps Script num simulador
 node tests/servidor-dev.js 8788 # site + backend simulado em http://localhost:8788 (ana / teste123)
 python -I tools/extrair_planilha.py "planilha.xlsx"   # regera o modelo e a base a partir da planilha original
 ```
@@ -115,6 +123,7 @@ O cálculo roda igual no navegador e no Node:
 - `js/motor.js`: orçamento.
 - `js/cronograma.js`: cronograma e parcelas.
 - `js/contrato.js`: escopo e contrato.
+- `js/gastos.js`: gasto × orçado, mês a mês e caixa da obra.
 
 Com o exemplo da planilha, ele reproduz o subtotal de R$ 456.454,02 e o cronograma de 295 dias, de 01/10/2024 a 23/07/2025.
 
@@ -127,6 +136,14 @@ Com o exemplo da planilha, ele reproduz o subtotal de R$ 456.454,02 e o cronogra
    - não mexe em nada que já foi editado.
 3. Publique: *Implantar → Gerenciar implantações → editar → Nova versão*.
 
-## Próximas fases
+## Atualizar uma instalação existente (Fase 2 → Fase 3)
 
-- **Fase 3**: gastos realizados × orçado, integração com Gestão de Obras e PDFs salvos no Drive.
+1. No Apps Script, crie o arquivo **Gastos** (*+ → Script*) e cole o `apps-script/Gastos.gs`.
+2. Substitua o conteúdo de **Code, Db, Setup e Orcamentos** pelos arquivos de mesmo nome. Auth, Config e Seed não mudaram.
+3. Rode **`setupPlanilha`**. Ele cria a aba `db_gastos` e não mexe no resto.
+4. Publique: *Implantar → Gerenciar implantações → editar → Nova versão*.
+
+## Fora do escopo (decidido)
+
+- Estoque, entrega de EPI e diário de obra ficam no sistema Gestão de Obras. Este sistema não grava naquela planilha.
+- PDFs e comprovantes continuam fora do Drive. A proposta, o contrato e o relatório saem por *Imprimir / Salvar PDF*.

@@ -44,9 +44,15 @@ function lerOrcamentos_(incluirInativos) {
 }
 
 function acaoListOrcamentos() {
+  // Planilha da Fase 2 ainda sem db_gastos: a lista funciona, só sem o total gasto.
+  var gastos = planilha_().getSheetByName(ABA_GASTOS) ? totaisGastos_() : {};
   return lerOrcamentos_(false)
     .sort(function (a, b) { return a.atualizado_em < b.atualizado_em ? 1 : -1; })
-    .map(publico_);
+    .map(function (o) {
+      var r = publico_(o);
+      r.total_gasto = Math.round((gastos[o.id] || 0) * 100) / 100;
+      return r;
+    });
 }
 
 function acaoGetOrcamento(dados) {
