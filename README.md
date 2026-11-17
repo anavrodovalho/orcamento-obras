@@ -61,6 +61,11 @@ Para atualizar o Apps Script depois, use *Implantar → Gerenciar implantações
   - **Mês a mês**: gasto, recebido (parcelas pagas) e caixa acumulado, com gráfico.
   - **Relatório da obra**: folha A4 com resumo financeiro, grupos, meses, etapas e parcelas.
   - A lista de orçamentos mostra o total gasto de cada obra.
+- **Dashboard** (menu lateral): o DASHBOARD da planilha, uma obra por vez. Escolha a obra no seletor; as obras "Em obra" aparecem primeiro.
+  - **Indicadores**: orçamento, total gasto, disponível, saldo bruto (inclui estouro), % concluído e prazo, além do status da validação.
+  - **Gráficos**: total gasto vs. orçamento (rosca), orçamento × gasto, gastos vs. orçamento por grupo, Pareto dos gastos, gasto por mês e % de conclusão das atividades. Passe o mouse para ver os valores.
+  - O Pareto da planilha tem dois eixos. Aqui o % acumulado aparece numa coluna ao lado das barras.
+  - Não precisa de nada novo no Apps Script: usa os mesmos dados das abas Gastos, Pagamento e Cronograma.
 
 ## Editar o modelo (fatores, fórmulas, preços)
 

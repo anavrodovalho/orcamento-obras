@@ -1,10 +1,10 @@
 'use strict';
 /**
  * app.js — inicialização, login, navegação (hash), dados compartilhados, modal e toasts.
- * Rotas: #/orcamentos · #/orcamentos/novo · #/orcamentos/ORC0001 · #/sinapi · #/modelo
+ * Rotas: #/dashboard[/ORC0001] · #/orcamentos · #/orcamentos/novo · #/orcamentos/ORC0001 · #/sinapi · #/modelo
  */
 
-const TITULOS = { orcamentos: 'Orçamentos', orcamento: 'Orçamento', sinapi: 'Base SINAPI', modelo: 'Modelo de itens' };
+const TITULOS = { dashboard: 'Dashboard', orcamentos: 'Orçamentos', orcamento: 'Orçamento', sinapi: 'Base SINAPI', modelo: 'Modelo de itens' };
 
 /** Dados que várias telas usam: modelo (cfg_* da planilha) e base SINAPI (GitHub). */
 const dados = {
@@ -150,7 +150,8 @@ const app = {
     window.scrollTo(0, 0);
 
     try {
-      if (rota === 'orcamentos') await listaOrcamentos.mostrar();
+      if (rota === 'dashboard') await painel.mostrar(parametro);
+      else if (rota === 'orcamentos') await listaOrcamentos.mostrar();
       else if (rota === 'orcamento') await editor.abrir(parametro);
       else if (rota === 'sinapi') await consultas.mostrarSinapi();
       else if (rota === 'modelo') await consultas.mostrarModelo();

@@ -92,7 +92,8 @@ Object.assign(editor, {
       ${this.formGasto()}
       <div class="cartao">
         <div class="cartao-titulo"><h2>Gasto × orçado por grupo</h2>
-          <button class="botao botao-secundario botao-pequeno" type="button" id="gs-relatorio">Relatório da obra</button></div>
+          <span class="gs-acoes"><a class="botao botao-secundario botao-pequeno" href="#/dashboard/${esc(this.id)}">Dashboard</a>
+          <button class="botao botao-secundario botao-pequeno" type="button" id="gs-relatorio">Relatório da obra</button></span></div>
         <p class="nota">Orçado = custo do grupo na lista de itens (sem administração nem proteção), como no DASHBOARD da planilha.</p>
         <div class="tabela-rolagem"><table class="tabela tabela-gastos">
           <thead><tr><th>Grupo</th><th class="num">Orçado</th><th class="num">Gasto</th><th class="num">Saldo</th><th class="col-barra">Consumido</th><th>Situação</th></tr></thead>

@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=3">
-  <link rel="stylesheet" href="css/orcamento.css?v=4">
+  <link rel="stylesheet" href="css/orcamento.css?v=5">
   <script src="js/theme.js"></script>
 </head>
 <body>
@@ -46,6 +46,10 @@
         <img class="logo-simbolo" src="assets/logo-simbolo.png" alt="Habitar Engenharia">
       </div>
       <nav class="menu-itens">
+        <a href="#/dashboard" data-rota="dashboard" class="menu-item">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span>Dashboard</span>
+        </a>
         <a href="#/orcamentos" data-rota="orcamentos" class="menu-item">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6M10 8h2"/></svg>
           <span>Orçamentos</span>
@@ -87,6 +91,7 @@
       </header>
 
       <main class="conteudo">
+        <section id="vista-dashboard" class="vista" hidden></section>
         <section id="vista-orcamentos" class="vista" hidden></section>
         <section id="vista-orcamento" class="vista" hidden></section>
         <section id="vista-sinapi" class="vista" hidden></section>
@@ -95,6 +100,7 @@
     </div>
 
     <nav class="menu-inferior" aria-label="Menu">
+      <a href="#/dashboard" data-rota="dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
       <a href="#/orcamentos" data-rota="orcamentos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6M10 8h2"/></svg><span>Orçamentos</span></a>
       <a href="#/sinapi" data-rota="sinapi"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span>SINAPI</span></a>
       <a href="#/modelo" data-rota="modelo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg><span>Modelo</span></a>
@@ -138,10 +144,11 @@
   <script src="js/cronograma.js?v=3"></script>
   <script src="js/contrato.js?v=3"></script>
   <script src="js/gastos.js?v=4"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/app.js?v=5"></script>
   <script src="js/orcamentos.js?v=4"></script>
   <script src="js/fase2.js?v=3"></script>
-  <script src="js/fase3.js?v=4"></script>
+  <script src="js/fase3.js?v=5"></script>
+  <script src="js/dashboard.js?v=5"></script>
   <script src="js/proposta.js?v=3"></script>
   <script src="js/consultas.js?v=3"></script>
 </body>

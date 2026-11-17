@@ -220,6 +220,94 @@ tr.linha-atual { background: var(--azul-fundo); }
 .gm-gasto { background: var(--dourado); }
 .gm-legenda { display: flex; gap: 16px; font-size: 12.5px; color: var(--texto-2); margin-bottom: 12px; }
 .gm-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+/* ── Dashboard ──
+   Cores validadas (scripts/validate_palette.js da skill dataviz): orçado × gasto passam em
+   lightness, chroma, separação para daltonismo e contraste — claro e escuro com tons próprios. */
+:root { --dash-orcado: #0088A0; --dash-gasto: #B5791A; --dash-trilho: #E3E9E8; }
+[data-theme="dark"] { --dash-orcado: #1C9AAE; --dash-gasto: #B07F28; --dash-trilho: #134046; }
+.dash-topo .campo { width: auto; min-width: min(100%, 360px); max-width: 480px; }
+.dash-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.dash-cabecalho h2 { font-size: 20px; }
+.dash-cabecalho small { color: var(--texto-2); font-size: 13px; }
+.dash-pilulas { display: flex; gap: 6px; flex-wrap: wrap; }
+.dash-cards { grid-template-columns: repeat(6, minmax(0, 1fr)); margin-bottom: 14px; }
+.dash-cards .valor-card { font-size: 19px; }
+.dash-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.dash-grade > .cartao { margin: 0; }
+.dash-largo { grid-column: 1 / -1; }
+.legenda .leg-orcado::before { background: var(--dash-orcado); }
+.legenda .leg-gasto::before { background: var(--dash-gasto); }
+/* rosca */
+.dash-rosca { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.rosca { width: 170px; flex-shrink: 0; }
+.rosca circle { fill: none; stroke-width: 18; }
+.rosca-trilho { stroke: var(--dash-trilho); }
+.rosca-arco { stroke: var(--dash-gasto); }
+.rosca-arco.estouro { stroke: var(--vermelho); }
+.grafico .rosca-valor { font-size: 22px; font-weight: 700; fill: var(--texto); }
+.grafico .rosca-rotulo { font-size: 11px; fill: var(--texto-2); }
+.dash-legenda-valores { display: grid; grid-template-columns: auto auto; gap: 8px 18px; margin: 0; font-size: 14px; }
+.dash-legenda-valores dt { color: var(--texto-2); }
+.dash-legenda-valores dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dash-legenda-valores i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
+.cor-gasto { background: var(--dash-gasto); }
+.cor-trilho { background: var(--dash-trilho); outline: 1px solid var(--borda); }
+/* barras horizontais (comparativo, grupos, Pareto, atividades) */
+.db-trilho { display: block; height: 14px; background: transparent; border-radius: 0 4px 4px 0; position: relative; }
+.db-trilho.fino { height: 8px; }
+.db-trilho i { display: block; height: 100%; border-radius: 0 4px 4px 0; min-width: 0; }
+.db-orcado { background: var(--dash-orcado); }
+.db-gasto { background: var(--dash-gasto); }
+.dash-barras { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
+.db-linha, .dg-linha, .dp-linha, .da-linha { display: grid; align-items: center; gap: 4px 12px; border-radius: 6px; padding: 3px 4px; }
+.db-linha:hover, .dg-linha:hover, .dp-linha:hover, .da-linha:hover { background: var(--linha-hover); }
+.db-linha { grid-template-columns: 150px minmax(0, 1fr) 120px; }
+.db-nome, .dg-nome, .dp-nome, .da-nome { font-size: 13px; color: var(--texto); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.db-valor, .dg-valor, .dp-linha .num, .da-pct { font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dash-grupos { display: flex; flex-direction: column; gap: 4px; }
+.dg-linha { grid-template-columns: 230px minmax(0, 1fr) 150px; padding: 5px 4px; }
+.dg-barras { display: flex; flex-direction: column; gap: 2px; }
+.dg-valor strong { display: block; font-size: 13px; }
+.dg-valor small { color: var(--texto-2); font-size: 11.5px; }
+.dg-nome .pilula { font-size: 10.5px; padding: 1px 6px; }
+.dash-pareto { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+.dp-cab, .dp-linha { display: grid; grid-template-columns: 150px minmax(0, 1fr) 105px 46px; gap: 4px 10px; align-items: center; }
+.dp-cab { font-size: 11.5px; text-transform: uppercase; letter-spacing: .3px; color: var(--texto-2); padding: 0 4px 4px; }
+.dp-cab .num { text-align: right; }
+.dp-linha:not(.dp-vital) .db-gasto { opacity: .55; }
+.dash-meses { max-height: 240px; }
+.grafico .barra-gasto { fill: var(--dash-gasto); }
+.grafico .barra-gasto.atual { fill: var(--dash-orcado); }
+.grafico .linha-base { stroke: var(--borda); }
+.grafico text.mes-atual { fill: var(--texto); font-weight: 600; }
+.dash-atividades { columns: 2; column-gap: 24px; }
+.dash-atividades .da-linha { break-inside: avoid; margin-bottom: 2px; }
+.da-linha { grid-template-columns: minmax(0, 1fr) 90px 40px 130px; }
+.da-status { text-align: right; }
+.da-status .pilula { font-size: 10.5px; padding: 1px 6px; }
+.dash-mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--borda); }
+.dash-mini dt { font-size: 12px; color: var(--texto-2); text-transform: uppercase; letter-spacing: .3px; }
+.dash-mini dd { margin: 2px 0 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dash-mini small { display: block; font-weight: 400; font-size: 12px; color: var(--texto-2); }
+@media (max-width: 1560px) {
+  .dash-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 1100px) {
+  .dash-atividades { columns: 1; }
+}
+@media (max-width: 820px) {
+  .dash-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dash-mini { grid-template-columns: 1fr 1fr; }
+  .dash-grade { grid-template-columns: 1fr; }
+  .db-linha { grid-template-columns: 110px minmax(0, 1fr) 100px; }
+  .dg-linha { grid-template-columns: minmax(0, 1fr) 110px; }
+  .dg-barras { grid-column: 1 / -1; grid-row: 2; }
+  .dp-cab, .dp-linha { grid-template-columns: 105px minmax(0, 1fr) 92px 40px; gap: 4px 6px; }
+  .da-linha { grid-template-columns: minmax(0, 1fr) 60px 36px; }
+  .da-status { display: none; }
+  .rosca { width: 140px; }
+}
+
 /* Relatório da obra: tabelas longas podem quebrar de página (o título não fica sozinho no pé) */
 .pr-secao.rl-secao { break-inside: auto; }
 .rl-secao h2 { break-after: avoid-page; }
